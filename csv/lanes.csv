@@ -1,0 +1,5 @@
+lane,target_days,contract_required,routing_rule
+Fast,10,0,"Single no-contract product (Verify, Wallets, Pay-ins), low risk, SMB/Mid-market, single entity"
+Standard,30,1,"Single product, low/medium risk, up to 2 entities, no Cards/Travel/USDC"
+Complex,60,1,"Cards or Travel, multi-product onboarding, or 3+ legal entities"
+Exceptions,75,1,"USDC products or high-risk KYB (partner bank sign-off), or any journey stalled > 1.5x its lane target"

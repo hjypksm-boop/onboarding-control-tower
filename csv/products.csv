@@ -1,0 +1,9 @@
+product_id,product_name,product_family,contract_required,partner_bank_required,typical_tech_effort
+PAYIN,Pay-ins,Fiat,0,0,Medium
+PAYOUT,Payouts,Fiat,1,0,Medium
+WALLET,Wallets,Fiat,0,0,Low
+USDC_IN,USDC Pay-in,Crypto,1,1,High
+USDC_OUT,USDC Payout,Crypto,1,1,High
+VERIFY,Verify,Identity,0,0,Low
+CARDS,Cards,Cards,1,0,High
+TRAVEL,Travel,Cards,1,0,High

@@ -1,0 +1,29 @@
+lane,track,target_days,is_parallel
+Fast,Contract,0,1
+Fast,Legal,3,1
+Fast,KYB-KYC,6,1
+Fast,Tech build,8,1
+Fast,Compliance ops readiness,5,1
+Fast,Partner bank approval,0,1
+Fast,AM handoff,2,0
+Standard,Contract,7,1
+Standard,Legal,14,1
+Standard,KYB-KYC,18,1
+Standard,Tech build,25,1
+Standard,Compliance ops readiness,20,1
+Standard,Partner bank approval,0,1
+Standard,AM handoff,5,0
+Complex,Contract,14,1
+Complex,Legal,28,1
+Complex,KYB-KYC,30,1
+Complex,Tech build,52,1
+Complex,Compliance ops readiness,40,1
+Complex,Partner bank approval,0,1
+Complex,AM handoff,8,0
+Exceptions,Contract,14,1
+Exceptions,Legal,30,1
+Exceptions,KYB-KYC,40,1
+Exceptions,Tech build,45,1
+Exceptions,Compliance ops readiness,45,1
+Exceptions,Partner bank approval,65,1
+Exceptions,AM handoff,10,0

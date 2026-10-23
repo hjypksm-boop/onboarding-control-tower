@@ -1,0 +1,18 @@
+member_id,team_id,member_label,email,role
+SALES-A,SALES,Sales - Member A,sales.membera@example.com,Lead
+SALES-B,SALES,Sales - Member B,sales.memberb@example.com,Specialist
+LEGAL-A,LEGAL,Legal - Member A,legal.membera@example.com,Lead
+LEGAL-B,LEGAL,Legal - Member B,legal.memberb@example.com,Specialist
+COMPLIANCE-A,COMPLIANCE,Compliance (KYB/KYC) - Member A,compliance.membera@example.com,Lead
+COMPLIANCE-B,COMPLIANCE,Compliance (KYB/KYC) - Member B,compliance.memberb@example.com,Specialist
+COMPLIANCE-C,COMPLIANCE,Compliance (KYB/KYC) - Member C,compliance.memberc@example.com,Specialist
+SOLENG-A,SOLENG,Solutions Engineering - Member A,soleng.membera@example.com,Lead
+SOLENG-B,SOLENG,Solutions Engineering - Member B,soleng.memberb@example.com,Specialist
+SOLENG-C,SOLENG,Solutions Engineering - Member C,soleng.memberc@example.com,Specialist
+COMPOPS-A,COMPOPS,Compliance Ops - Member A,compops.membera@example.com,Lead
+COMPOPS-B,COMPOPS,Compliance Ops - Member B,compops.memberb@example.com,Specialist
+PARTNER-A,PARTNER,Partner Banking - Member A,partner.membera@example.com,Lead
+PARTNER-B,PARTNER,Partner Banking - Member B,partner.memberb@example.com,Specialist
+AM-A,AM,Account Management - Member A,am.membera@example.com,Lead
+AM-B,AM,Account Management - Member B,am.memberb@example.com,Specialist
+AM-C,AM,Account Management - Member C,am.memberc@example.com,Specialist

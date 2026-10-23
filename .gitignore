@@ -1,0 +1,13 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+
+# macOS
+.DS_Store
+
+# Generated database (rebuild with: python generate_data.py). csv/ stays committed.
+control_tower.db

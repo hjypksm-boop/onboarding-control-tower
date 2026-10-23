@@ -1,0 +1,41 @@
+client_id,client_name,industry,segment,hq_country,risk_rating,entity_count,client_status,sales_owner_id,am_owner_id,deal_closed_date
+CL-001,Lumen Tutors,EdTech,SMB,GB,Low,1,Onboarding,SALES-B,AM-A,2026-10-17
+CL-002,Copperleaf Studios,Creator platform,SMB,NL,Low,1,Onboarding,SALES-B,AM-B,2026-10-14
+CL-003,Harbourline Logistics,Logistics,Mid-market,DE,Low,1,Onboarding,SALES-A,AM-B,2026-10-09
+CL-004,Quillpay Freelance,Gig marketplace,SMB,GB,Low,1,Onboarding,SALES-B,AM-C,2026-09-28
+CL-005,Saltmarsh Retail,E-commerce,SMB,IE,Low,1,Onboarding,SALES-A,AM-B,2026-10-02
+CL-006,Orbitly Apps,SaaS,SMB,SG,Low,1,Onboarding,SALES-B,AM-C,2026-10-16
+CL-007,Fernway Health,Healthtech,Mid-market,AU,Low,1,Onboarding,SALES-B,AM-A,2026-10-14
+CL-008,Brightdock Events,Events,SMB,GB,Low,1,Onboarding,SALES-B,AM-A,2026-10-16
+CL-009,Kestrel Payroll,Payroll,Mid-market,GB,Medium,1,Onboarding,SALES-A,AM-B,2026-09-27
+CL-010,Tidewater Insurance,Insurtech,Mid-market,DE,Low,2,Onboarding,SALES-B,AM-A,2026-09-18
+CL-011,Marlow Marketplace,Marketplace,Mid-market,FR,Medium,1,Onboarding,SALES-B,AM-C,2026-10-05
+CL-012,Pinecrest Lending,Lending,Mid-market,US,Medium,1,Onboarding,SALES-B,AM-B,2026-09-22
+CL-013,Glasshouse Media,Media,Enterprise,GB,Low,1,Onboarding,SALES-A,AM-C,2026-10-01
+CL-014,Redwood Gaming,Gaming,Mid-market,MT,Medium,1,Onboarding,SALES-A,AM-C,2026-10-04
+CL-015,Ashgrove Property,Proptech,Mid-market,GB,Low,2,Onboarding,SALES-B,AM-C,2026-10-05
+CL-016,Nimbus Remit,Remittance,Mid-market,AE,Medium,1,Onboarding,SALES-B,AM-A,2026-09-21
+CL-017,Velvet Commerce,E-commerce,Enterprise,ES,Low,1,Onboarding,SALES-B,AM-A,2026-10-08
+CL-018,Corvid Analytics,SaaS,Mid-market,IN,Medium,1,Onboarding,SALES-B,AM-A,2026-09-26
+CL-019,Skyward Travel Group,Travel,Enterprise,GB,Medium,4,Onboarding,SALES-B,AM-B,2026-07-18
+CL-020,Atlas Fleet Services,Fleet management,Enterprise,DE,Low,3,Onboarding,SALES-A,AM-B,2026-10-07
+CL-021,Meridian Marketplaces,Marketplace,Enterprise,SG,Medium,2,Onboarding,SALES-B,AM-B,2026-09-26
+CL-022,Juniper Expense,Spend management,Mid-market,NL,Low,1,Onboarding,SALES-B,AM-B,2026-09-25
+CL-023,Horizon OTA,Travel,Mid-market,AE,Medium,2,Onboarding,SALES-B,AM-C,2026-08-28
+CL-024,Granite Procurement,B2B procurement,Enterprise,US,Low,5,Onboarding,SALES-A,AM-B,2026-08-12
+CL-025,Polaris Digital Assets,Crypto exchange,Mid-market,SG,Medium,1,Onboarding,SALES-B,AM-A,2026-09-11
+CL-026,Stablepath Treasury,Treasury,Enterprise,CH,Medium,2,Onboarding,SALES-A,AM-A,2026-07-25
+CL-027,Cobalt Gaming,Gaming,Mid-market,CW,High,1,Onboarding,SALES-B,AM-B,2026-10-05
+CL-028,Lagos Link Remit,Remittance,Mid-market,NG,High,1,Onboarding,SALES-B,AM-A,2026-09-21
+CL-029,Driftwood Web3,Web3,SMB,AE,Medium,1,Onboarding,SALES-A,AM-A,2026-09-10
+CL-030,Equinox Trade Finance,Trade finance,Enterprise,HK,High,3,Onboarding,SALES-A,AM-C,2026-10-03
+CL-031,Bluepeak Marketplace,Marketplace,Enterprise,GB,Low,2,Live,SALES-B,AM-A,2026-03-10
+CL-032,Sterling Payroll Co,Payroll,Mid-market,GB,Low,1,Live,SALES-A,AM-B,2026-03-14
+CL-033,Aurora Remit,Remittance,Mid-market,AE,Medium,1,Live,SALES-B,AM-C,2026-02-07
+CL-034,Thistle Commerce,E-commerce,SMB,GB,Low,1,Live,SALES-A,AM-C,2026-04-20
+CL-035,Zephyr Travel,Travel,Enterprise,DE,Medium,3,Live,SALES-B,AM-C,2025-09-03
+CL-036,Oakline Insurance,Insurtech,Mid-market,NL,Low,1,Live,SALES-A,AM-A,2025-11-25
+CL-037,Pebble Learning,EdTech,SMB,GB,Low,1,Live,SALES-A,AM-C,2026-03-14
+CL-038,Monarch Gig Works,Gig marketplace,Mid-market,US,Medium,1,Live,SALES-B,AM-B,2026-01-11
+CL-039,Cinder Games,Gaming,Mid-market,MT,Medium,1,Live,SALES-A,AM-B,2026-02-08
+CL-040,Halcyon Wallet,Fintech,Mid-market,SG,Low,1,Live,SALES-A,AM-B,2025-09-12

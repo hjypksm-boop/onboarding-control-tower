@@ -1,0 +1,8 @@
+team_id,team_name,owns_track
+SALES,Sales,Contract
+LEGAL,Legal,Legal
+COMPLIANCE,Compliance (KYB/KYC),KYB-KYC
+SOLENG,Solutions Engineering,Tech build
+COMPOPS,Compliance Ops,Compliance ops readiness
+PARTNER,Partner Banking,Partner bank approval
+AM,Account Management,AM handoff

@@ -1,0 +1,50 @@
+cp_id,client_id,product_id,product_sequence,initial_lane,current_lane,lane_reason,contract_signed_date,onboarding_start_date,target_go_live_date,forecast_go_live_date,actual_go_live_date,cp_status,expected_daily_revenue
+CP-0001,CL-001,VERIFY,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-17,2026-10-27,2026-10-24,,Onboarding,52.01
+CP-0002,CL-002,WALLET,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-14,2026-10-24,2026-10-25,,Onboarding,200.32
+CP-0003,CL-003,PAYIN,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-09,2026-10-19,2026-11-01,,Onboarding,1154.38
+CP-0004,CL-004,VERIFY,1,Fast,Exceptions,"No-contract product, low risk, single entity; escalated: stalled beyond 1.5x Fast target",,2026-09-28,2026-10-08,2026-10-21,,Onboarding,60.63
+CP-0005,CL-005,PAYIN,1,Fast,Exceptions,"No-contract product, low risk, single entity; escalated: stalled beyond 1.5x Fast target",,2026-10-02,2026-10-12,2026-10-19,,Onboarding,424.93
+CP-0006,CL-006,WALLET,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-16,2026-10-26,2026-10-31,,Onboarding,142.72
+CP-0007,CL-007,VERIFY,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-14,2026-10-24,2026-10-22,,Onboarding,160.9
+CP-0008,CL-008,PAYIN,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-10-16,2026-10-26,2026-10-25,,Onboarding,311.76
+CP-0009,CL-009,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-02,2026-09-27,2026-10-27,2026-10-30,,Onboarding,1474.62
+CP-0010,CL-010,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-09-23,2026-09-18,2026-10-18,2026-10-21,,Onboarding,1152.89
+CP-0011,CL-011,PAYIN,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-11,2026-10-05,2026-11-04,2026-11-02,,Onboarding,994.84
+CP-0012,CL-012,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-09-28,2026-09-22,2026-10-22,2026-10-21,,Onboarding,1268.73
+CP-0013,CL-013,WALLET,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-07,2026-10-01,2026-10-31,2026-10-30,,Onboarding,971.73
+CP-0014,CL-014,PAYIN,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-11,2026-10-04,2026-11-03,2026-11-01,,Onboarding,885.72
+CP-0015,CL-015,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-12,2026-10-05,2026-11-04,2026-11-11,,Onboarding,849.11
+CP-0016,CL-016,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-09-27,2026-09-21,2026-10-21,2026-10-20,,Onboarding,901.64
+CP-0017,CL-017,PAYIN,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-14,2026-10-08,2026-11-07,2026-11-06,,Onboarding,1958.86
+CP-0018,CL-018,WALLET,1,Standard,Standard,"Contracted single product, low/medium risk",2026-10-02,2026-09-26,2026-10-26,2026-10-22,,Onboarding,437.59
+CP-0019,CL-019,TRAVEL,1,Complex,Exceptions,Cards/Travel programme setup; escalated: stalled beyond 1.5x Complex target,2026-07-28,2026-07-18,2026-09-16,2026-10-19,,Onboarding,5197.55
+CP-0020,CL-020,CARDS,1,Complex,Complex,Cards/Travel programme setup,,2026-10-07,2026-12-06,2027-01-18,,Onboarding,3565.72
+CP-0021,CL-021,PAYIN,1,Complex,Complex,Multi-product onboarding,2026-10-07,2026-09-26,2026-11-25,2026-11-25,,Onboarding,1769.61
+CP-0022,CL-021,PAYOUT,1,Complex,Complex,Multi-product onboarding,2026-10-07,2026-09-26,2026-11-25,2026-12-18,,Onboarding,2784.02
+CP-0023,CL-022,CARDS,1,Complex,Complex,Cards/Travel programme setup,2026-10-09,2026-09-25,2026-11-24,2026-11-23,,Onboarding,2298.99
+CP-0024,CL-023,TRAVEL,1,Complex,Complex,Cards/Travel programme setup,2026-09-11,2026-08-28,2026-10-27,2026-11-29,,Onboarding,2628.59
+CP-0025,CL-023,PAYOUT,1,Complex,Complex,Cards/Travel programme setup,2026-09-11,2026-08-28,2026-10-27,2026-10-30,,Onboarding,1459.3
+CP-0026,CL-024,PAYOUT,1,Complex,Complex,5 legal entities to onboard,2026-08-25,2026-08-12,2026-10-11,2026-10-22,,Onboarding,2525.0
+CP-0027,CL-025,USDC_IN,1,Exceptions,Exceptions,USDC product requires partner bank sign-off,2026-09-28,2026-09-11,2026-11-25,2026-11-10,,Onboarding,1356.55
+CP-0028,CL-026,USDC_OUT,1,Exceptions,Exceptions,USDC product requires partner bank sign-off,2026-08-05,2026-07-25,2026-10-08,2026-10-19,,Onboarding,3550.06
+CP-0029,CL-026,PAYOUT,1,Exceptions,Exceptions,USDC product requires partner bank sign-off,2026-08-05,2026-07-25,2026-10-08,2026-10-21,,Onboarding,3101.47
+CP-0030,CL-027,PAYIN,1,Exceptions,Exceptions,High-risk KYB requires partner bank enhanced due diligence,2026-10-18,2026-10-05,2026-12-19,2026-12-11,,Onboarding,951.96
+CP-0031,CL-028,PAYOUT,1,Exceptions,Exceptions,High-risk KYB requires partner bank enhanced due diligence,2026-10-02,2026-09-21,2026-12-05,2026-11-29,,Onboarding,1535.66
+CP-0032,CL-029,USDC_OUT,1,Exceptions,Exceptions,USDC product requires partner bank sign-off,2026-09-19,2026-09-10,2026-11-24,2026-12-14,,Onboarding,691.95
+CP-0033,CL-030,PAYOUT,1,Exceptions,Exceptions,High-risk KYB requires partner bank enhanced due diligence,2026-10-13,2026-10-03,2026-12-17,2026-12-18,,Onboarding,3265.15
+CP-0034,CL-031,PAYIN,1,Standard,Standard,"Contracted single product, low/medium risk",2026-03-16,2026-03-10,2026-04-09,,2026-04-15,Live,1991.97
+CP-0035,CL-031,PAYOUT,2,Standard,Standard,"Contracted single product, low/medium risk",2026-07-14,2026-07-09,2026-08-08,,2026-08-02,Live,2699.47
+CP-0036,CL-032,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-03-25,2026-03-14,2026-04-13,,2026-04-15,Live,1490.08
+CP-0037,CL-032,WALLET,2,Fast,Fast,"No-contract product, low risk, single entity",,2026-06-16,2026-06-26,,2026-06-25,Live,433.38
+CP-0038,CL-033,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-02-18,2026-02-07,2026-03-09,,2026-03-06,Live,896.12
+CP-0039,CL-033,USDC_OUT,2,Exceptions,Exceptions,USDC product requires partner bank sign-off,2026-10-06,2026-09-25,2026-12-09,2026-12-27,,Onboarding,1348.05
+CP-0040,CL-034,PAYIN,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-04-20,2026-04-30,,2026-05-01,Live,316.55
+CP-0041,CL-034,VERIFY,2,Fast,Fast,"No-contract product, low risk, single entity",,2026-06-12,2026-06-22,,2026-06-22,Live,42.35
+CP-0042,CL-035,TRAVEL,1,Complex,Complex,Cards/Travel programme setup,2025-09-17,2025-09-03,2025-11-02,,2025-10-29,Live,5838.33
+CP-0043,CL-035,CARDS,2,Complex,Complex,Cards/Travel programme setup,2026-09-14,2026-09-04,2026-11-03,2026-10-29,,Onboarding,3377.64
+CP-0044,CL-036,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2025-11-30,2025-11-25,2025-12-25,,2025-12-22,Live,1413.67
+CP-0045,CL-037,VERIFY,1,Fast,Fast,"No-contract product, low risk, single entity",,2026-03-14,2026-03-24,,2026-03-29,Live,72.52
+CP-0046,CL-037,PAYIN,2,Fast,Fast,"No-contract product, low risk, single entity",,2026-07-14,2026-07-24,,2026-07-28,Live,322.72
+CP-0047,CL-038,PAYOUT,1,Standard,Standard,"Contracted single product, low/medium risk",2026-01-19,2026-01-11,2026-02-10,,2026-02-07,Live,979.02
+CP-0048,CL-039,PAYIN,1,Standard,Standard,"Contracted single product, low/medium risk",2026-02-12,2026-02-08,2026-03-10,,2026-03-09,Live,1001.44
+CP-0049,CL-040,WALLET,1,Fast,Fast,"No-contract product, low risk, single entity",,2025-09-12,2025-09-22,,2025-09-21,Live,488.23

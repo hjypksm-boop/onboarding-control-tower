@@ -1,0 +1,157 @@
+touchpoint_id,client_id,cp_id,touchpoint_date,phase,requesting_team_id,member_id,channel,request_type,description,is_bundled,teams_covered
+TP-0001,CL-001,,2026-09-22,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0002,CL-001,CP-0001,2026-10-17,Post-sale,SOLENG,SOLENG-C,Portal,Information request,"Consolidated request: Webhook endpoint, IP allowlist and sandbox test sign-off; Go-live sign-off and operational contacts",1,"Solutions Engineering, Account Management"
+TP-0003,CL-001,CP-0001,2026-10-17,Post-sale,LEGAL,LEGAL-A,Call,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0004,CL-001,CP-0001,2026-10-17,Post-sale,AM,AM-C,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0005,CL-001,CP-0001,2026-10-18,Post-sale,LEGAL,LEGAL-B,Call,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0006,CL-002,,2026-10-10,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0007,CL-002,,2026-10-01,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0008,CL-002,CP-0002,2026-10-15,Post-sale,SOLENG,SOLENG-B,Call,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0009,CL-002,CP-0002,2026-10-18,Post-sale,COMPOPS,COMPOPS-A,Email,Document request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0010,CL-003,,2026-09-15,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0011,CL-003,CP-0003,2026-10-10,Post-sale,SOLENG,SOLENG-C,Call,Document request,"Consolidated request: Webhook endpoint, IP allowlist and sandbox test sign-off; UBO register, director ID and source of funds evidence",1,"Solutions Engineering, Compliance (KYB/KYC)"
+TP-0012,CL-003,CP-0003,2026-10-13,Post-sale,AM,AM-B,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0013,CL-003,CP-0003,2026-10-14,Post-sale,COMPLIANCE,COMPLIANCE-B,Call,Document request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0014,CL-003,CP-0003,2026-10-15,Post-sale,SOLENG,SOLENG-C,Email,Document request,"Consolidated request: Webhook endpoint, IP allowlist and sandbox test sign-off; UBO register, director ID and source of funds evidence; Signed MSA addendum and DPA",1,"Solutions Engineering, Compliance (KYB/KYC), Legal"
+TP-0015,CL-004,,2026-09-23,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0016,CL-004,CP-0004,2026-10-16,Post-sale,LEGAL,LEGAL-B,Call,Document request,"Consolidated request: Signed MSA addendum and DPA; UBO register, director ID and source of funds evidence",1,"Legal, Compliance (KYB/KYC)"
+TP-0017,CL-005,,2026-09-23,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0018,CL-005,CP-0005,2026-10-15,Post-sale,COMPLIANCE,COMPLIANCE-A,Portal,Document request,"Consolidated request: UBO register, director ID and source of funds evidence; Signed MSA addendum and DPA; Go-live sign-off and operational contacts",1,"Compliance (KYB/KYC), Legal, Account Management"
+TP-0019,CL-006,,2026-09-25,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0020,CL-006,CP-0006,2026-10-17,Post-sale,AM,AM-C,Email,Sign-off,"Consolidated request: Go-live sign-off and operational contacts; UBO register, director ID and source of funds evidence; Signed MSA addendum and DPA",1,"Account Management, Compliance (KYB/KYC), Legal"
+TP-0021,CL-006,CP-0006,2026-10-18,Post-sale,LEGAL,LEGAL-B,Email,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0022,CL-007,,2026-10-09,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0023,CL-007,CP-0007,2026-10-15,Post-sale,COMPLIANCE,COMPLIANCE-A,Call,Information request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0024,CL-007,CP-0007,2026-10-16,Post-sale,SOLENG,SOLENG-B,Portal,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0025,CL-008,,2026-09-23,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0026,CL-008,CP-0008,2026-10-18,Post-sale,COMPOPS,COMPOPS-A,Portal,Document request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0027,CL-009,,2026-09-11,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0028,CL-009,,2026-09-16,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0029,CL-009,CP-0009,2026-10-09,Post-sale,COMPOPS,COMPOPS-A,Call,Document request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0030,CL-010,,2026-09-02,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0031,CL-010,,2026-09-03,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0032,CL-010,CP-0010,2026-09-19,Post-sale,AM,AM-C,Portal,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0033,CL-010,CP-0010,2026-09-26,Post-sale,COMPLIANCE,COMPLIANCE-B,Portal,Information request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0034,CL-010,CP-0010,2026-10-10,Post-sale,AM,AM-A,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0035,CL-011,,2026-09-11,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0036,CL-011,CP-0011,2026-10-06,Post-sale,COMPLIANCE,COMPLIANCE-A,Email,Information request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0037,CL-011,CP-0011,2026-10-18,Post-sale,COMPLIANCE,COMPLIANCE-B,Portal,Document request,"Consolidated request: UBO register, director ID and source of funds evidence; Expected corridors, volumes and use-case confirmation",1,"Compliance (KYB/KYC), Compliance Ops"
+TP-0038,CL-012,,2026-08-31,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0039,CL-012,,2026-09-02,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0040,CL-012,CP-0012,2026-09-30,Post-sale,SOLENG,SOLENG-B,Call,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0041,CL-012,CP-0012,2026-10-06,Post-sale,SOLENG,SOLENG-B,Call,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0042,CL-012,CP-0012,2026-10-07,Post-sale,LEGAL,LEGAL-A,Call,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0043,CL-012,CP-0012,2026-10-15,Post-sale,COMPLIANCE,COMPLIANCE-B,Call,Document request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0044,CL-013,,2026-09-18,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0045,CL-013,,2026-09-23,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0046,CL-013,CP-0013,2026-10-01,Post-sale,AM,AM-B,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0047,CL-013,CP-0013,2026-10-18,Post-sale,COMPLIANCE,COMPLIANCE-A,Call,Document request,"Consolidated request: UBO register, director ID and source of funds evidence; Expected corridors, volumes and use-case confirmation; Signed MSA addendum and DPA",1,"Compliance (KYB/KYC), Compliance Ops, Legal"
+TP-0048,CL-014,,2026-09-17,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0049,CL-014,CP-0014,2026-10-06,Post-sale,LEGAL,LEGAL-B,Email,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0050,CL-015,,2026-09-29,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0051,CL-015,,2026-09-12,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0052,CL-015,CP-0015,2026-10-07,Post-sale,AM,AM-C,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0053,CL-015,CP-0015,2026-10-16,Post-sale,AM,AM-C,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0054,CL-016,,2026-09-01,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0055,CL-016,,2026-08-29,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0056,CL-016,CP-0016,2026-09-21,Post-sale,COMPLIANCE,COMPLIANCE-B,Portal,Information request,"Consolidated request: UBO register, director ID and source of funds evidence; Webhook endpoint, IP allowlist and sandbox test sign-off; Expected corridors, volumes and use-case confirmation",1,"Compliance (KYB/KYC), Solutions Engineering, Compliance Ops"
+TP-0057,CL-016,CP-0016,2026-09-23,Post-sale,SOLENG,SOLENG-B,Email,Information request,"Consolidated request: Webhook endpoint, IP allowlist and sandbox test sign-off; Expected corridors, volumes and use-case confirmation; UBO register, director ID and source of funds evidence",1,"Solutions Engineering, Compliance Ops, Compliance (KYB/KYC)"
+TP-0058,CL-016,CP-0016,2026-10-16,Post-sale,SOLENG,SOLENG-B,Portal,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0059,CL-017,,2026-09-30,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0060,CL-017,,2026-09-20,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0061,CL-017,CP-0017,2026-10-14,Post-sale,COMPLIANCE,COMPLIANCE-A,Email,Information request,"Consolidated request: UBO register, director ID and source of funds evidence; Go-live sign-off and operational contacts",1,"Compliance (KYB/KYC), Account Management"
+TP-0062,CL-017,CP-0017,2026-10-15,Post-sale,AM,AM-B,Call,Sign-off,"Consolidated request: Go-live sign-off and operational contacts; UBO register, director ID and source of funds evidence; Webhook endpoint, IP allowlist and sandbox test sign-off",1,"Account Management, Compliance (KYB/KYC), Solutions Engineering"
+TP-0063,CL-018,,2026-09-03,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0064,CL-018,,2026-09-10,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0065,CL-018,CP-0018,2026-09-30,Post-sale,LEGAL,LEGAL-A,Call,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0066,CL-018,CP-0018,2026-10-04,Post-sale,AM,AM-C,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0067,CL-018,CP-0018,2026-10-16,Post-sale,COMPOPS,COMPOPS-A,Portal,Information request,"Consolidated request: Expected corridors, volumes and use-case confirmation; Webhook endpoint, IP allowlist and sandbox test sign-off; Go-live sign-off and operational contacts",1,"Compliance Ops, Solutions Engineering, Account Management"
+TP-0068,CL-019,,2026-07-10,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0069,CL-019,CP-0019,2026-08-23,Post-sale,AM,AM-A,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0070,CL-019,CP-0019,2026-10-10,Post-sale,LEGAL,LEGAL-B,Portal,Document request,"Consolidated request: Signed MSA addendum and DPA; Expected corridors, volumes and use-case confirmation; Webhook endpoint, IP allowlist and sandbox test sign-off",1,"Legal, Compliance Ops, Solutions Engineering"
+TP-0071,CL-020,,2026-09-18,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0072,CL-020,,2026-09-19,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0073,CL-020,CP-0020,2026-10-09,Post-sale,LEGAL,LEGAL-A,Portal,Information request,"Consolidated request: Signed MSA addendum and DPA; Webhook endpoint, IP allowlist and sandbox test sign-off",1,"Legal, Solutions Engineering"
+TP-0074,CL-020,CP-0020,2026-10-13,Post-sale,SOLENG,SOLENG-C,Call,Information request,"Consolidated request: Webhook endpoint, IP allowlist and sandbox test sign-off; Go-live sign-off and operational contacts",1,"Solutions Engineering, Account Management"
+TP-0075,CL-020,CP-0020,2026-10-14,Post-sale,SOLENG,SOLENG-B,Portal,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0076,CL-020,CP-0020,2026-10-15,Post-sale,SOLENG,SOLENG-C,Email,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0077,CL-021,,2026-09-06,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0078,CL-021,,2026-09-16,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0079,CL-021,CP-0021,2026-09-28,Post-sale,LEGAL,LEGAL-A,Portal,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0080,CL-021,CP-0021,2026-10-03,Post-sale,LEGAL,LEGAL-A,Call,Document request,"Consolidated request: Signed MSA addendum and DPA; Webhook endpoint, IP allowlist and sandbox test sign-off",1,"Legal, Solutions Engineering"
+TP-0081,CL-022,,2026-09-13,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0082,CL-022,,2026-09-07,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0083,CL-022,CP-0023,2026-10-06,Post-sale,LEGAL,LEGAL-B,Portal,Document request,"Consolidated request: Signed MSA addendum and DPA; Expected corridors, volumes and use-case confirmation; UBO register, director ID and source of funds evidence",1,"Legal, Compliance Ops, Compliance (KYB/KYC)"
+TP-0084,CL-022,CP-0023,2026-10-13,Post-sale,LEGAL,LEGAL-B,Call,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0085,CL-022,CP-0023,2026-10-13,Post-sale,COMPLIANCE,COMPLIANCE-A,Email,Information request,"UBO register, director ID and source of funds evidence",0,Compliance (KYB/KYC)
+TP-0086,CL-023,,2026-08-08,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0087,CL-023,,2026-08-25,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0088,CL-023,CP-0024,2026-09-20,Post-sale,SOLENG,SOLENG-C,Call,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0089,CL-023,CP-0024,2026-09-26,Post-sale,COMPOPS,COMPOPS-B,Email,Information request,"Consolidated request: Expected corridors, volumes and use-case confirmation; Signed MSA addendum and DPA",1,"Compliance Ops, Legal"
+TP-0090,CL-023,CP-0024,2026-10-10,Post-sale,COMPOPS,COMPOPS-B,Email,Information request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0091,CL-024,,2026-07-23,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0092,CL-024,,2026-08-08,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0093,CL-024,CP-0026,2026-08-27,Post-sale,AM,AM-A,Call,Sign-off,Consolidated request: Go-live sign-off and operational contacts; Signed MSA addendum and DPA,1,"Account Management, Legal"
+TP-0094,CL-024,CP-0026,2026-10-09,Post-sale,AM,AM-A,Portal,Sign-off,"Consolidated request: Go-live sign-off and operational contacts; UBO register, director ID and source of funds evidence",1,"Account Management, Compliance (KYB/KYC)"
+TP-0095,CL-025,,2026-08-25,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0096,CL-025,CP-0027,2026-09-30,Post-sale,LEGAL,LEGAL-B,Call,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0097,CL-025,CP-0027,2026-10-14,Post-sale,LEGAL,LEGAL-B,Call,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0098,CL-026,,2026-07-01,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0099,CL-026,,2026-07-01,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0100,CL-026,CP-0028,2026-07-31,Post-sale,AM,AM-A,Portal,Sign-off,Consolidated request: Go-live sign-off and operational contacts; Partner bank EDD questionnaire,1,"Account Management, Partner Banking"
+TP-0101,CL-026,CP-0028,2026-08-30,Post-sale,LEGAL,LEGAL-B,Call,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0102,CL-026,CP-0028,2026-10-09,Post-sale,AM,AM-C,Portal,Sign-off,"Consolidated request: Go-live sign-off and operational contacts; UBO register, director ID and source of funds evidence; Expected corridors, volumes and use-case confirmation",1,"Account Management, Compliance (KYB/KYC), Compliance Ops"
+TP-0103,CL-027,,2026-09-27,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0104,CL-027,CP-0030,2026-10-06,Post-sale,COMPOPS,COMPOPS-A,Email,Information request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0105,CL-027,CP-0030,2026-10-09,Post-sale,LEGAL,LEGAL-A,Call,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0106,CL-027,CP-0030,2026-10-12,Post-sale,AM,AM-B,Portal,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0107,CL-027,CP-0030,2026-10-15,Post-sale,COMPOPS,COMPOPS-A,Call,Document request,"Consolidated request: Expected corridors, volumes and use-case confirmation; Go-live sign-off and operational contacts",1,"Compliance Ops, Account Management"
+TP-0108,CL-028,,2026-08-27,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0109,CL-028,,2026-09-05,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0110,CL-028,CP-0031,2026-10-04,Post-sale,AM,AM-A,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0111,CL-029,,2026-09-03,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0112,CL-029,,2026-08-24,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0113,CL-029,CP-0032,2026-09-13,Post-sale,SOLENG,SOLENG-B,Email,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0114,CL-029,CP-0032,2026-10-02,Post-sale,SOLENG,SOLENG-B,Email,Document request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0115,CL-029,CP-0032,2026-10-17,Post-sale,AM,AM-B,Portal,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0116,CL-030,,2026-09-13,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0117,CL-030,CP-0033,2026-10-11,Post-sale,PARTNER,PARTNER-A,Portal,Document request,Partner bank EDD questionnaire,0,Partner Banking
+TP-0118,CL-031,,2026-03-03,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0119,CL-031,CP-0034,2026-04-02,Post-sale,AM,AM-C,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0120,CL-031,CP-0034,2026-04-29,Post-sale,AM,AM-A,Portal,Sign-off,"Consolidated request: Go-live sign-off and operational contacts; Signed MSA addendum and DPA; Expected corridors, volumes and use-case confirmation",1,"Account Management, Legal, Compliance Ops"
+TP-0121,CL-031,,2026-06-18,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0122,CL-031,,2026-06-28,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0123,CL-031,CP-0035,2026-07-10,Post-sale,COMPLIANCE,COMPLIANCE-C,Portal,Information request,"Consolidated request: UBO register, director ID and source of funds evidence; Expected corridors, volumes and use-case confirmation; Webhook endpoint, IP allowlist and sandbox test sign-off",1,"Compliance (KYB/KYC), Compliance Ops, Solutions Engineering"
+TP-0124,CL-031,CP-0035,2026-07-30,Post-sale,SOLENG,SOLENG-B,Email,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0125,CL-032,,2026-02-21,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0126,CL-032,CP-0036,2026-04-26,Post-sale,LEGAL,LEGAL-B,Email,Information request,Signed MSA addendum and DPA,0,Legal
+TP-0127,CL-032,,2026-05-30,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0128,CL-033,,2026-01-16,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0129,CL-033,CP-0038,2026-02-10,Post-sale,COMPLIANCE,COMPLIANCE-B,Call,Information request,"Consolidated request: UBO register, director ID and source of funds evidence; Expected corridors, volumes and use-case confirmation",1,"Compliance (KYB/KYC), Compliance Ops"
+TP-0130,CL-033,,2026-09-21,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0131,CL-033,,2026-09-14,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0132,CL-034,,2026-04-16,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0133,CL-034,CP-0040,2026-05-10,Post-sale,LEGAL,LEGAL-B,Email,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0134,CL-034,,2026-06-09,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0135,CL-034,,2026-05-23,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0136,CL-035,,2025-08-25,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0137,CL-035,CP-0042,2025-09-11,Post-sale,COMPOPS,COMPOPS-A,Call,Document request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0138,CL-035,CP-0042,2025-09-15,Post-sale,LEGAL,LEGAL-A,Email,Document request,Signed MSA addendum and DPA,0,Legal
+TP-0139,CL-035,,2026-08-12,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0140,CL-035,,2026-08-16,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0141,CL-036,,2025-11-08,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0142,CL-036,CP-0044,2025-11-27,Post-sale,SOLENG,SOLENG-C,Email,Information request,"Webhook endpoint, IP allowlist and sandbox test sign-off",0,Solutions Engineering
+TP-0143,CL-036,CP-0044,2025-11-30,Post-sale,AM,AM-A,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0144,CL-037,,2026-02-22,Pre-sale,SALES,SALES-B,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0145,CL-037,,2026-02-18,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0146,CL-037,CP-0045,2026-03-21,Post-sale,COMPOPS,COMPOPS-B,Email,Information request,"Consolidated request: Expected corridors, volumes and use-case confirmation; UBO register, director ID and source of funds evidence",1,"Compliance Ops, Compliance (KYB/KYC)"
+TP-0147,CL-037,CP-0045,2026-04-12,Post-sale,AM,AM-C,Call,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0148,CL-037,,2026-06-28,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0149,CL-037,,2026-07-01,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0150,CL-038,,2026-01-04,Pre-sale,SALES,SALES-A,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0151,CL-038,CP-0047,2026-02-01,Post-sale,LEGAL,LEGAL-A,Portal,Information request,"Consolidated request: Signed MSA addendum and DPA; Go-live sign-off and operational contacts; UBO register, director ID and source of funds evidence",1,"Legal, Account Management, Compliance (KYB/KYC)"
+TP-0152,CL-038,CP-0047,2026-02-13,Post-sale,AM,AM-C,Email,Sign-off,Go-live sign-off and operational contacts,0,Account Management
+TP-0153,CL-039,,2026-01-27,Pre-sale,SALES,SALES-A,Call,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0154,CL-039,CP-0048,2026-03-08,Post-sale,COMPOPS,COMPOPS-A,Email,Document request,"Expected corridors, volumes and use-case confirmation",0,Compliance Ops
+TP-0155,CL-040,,2025-09-01,Pre-sale,SALES,SALES-B,Email,Information request,Commercial discovery and pricing discussion,0,Sales
+TP-0156,CL-040,CP-0049,2025-09-18,Post-sale,COMPLIANCE,COMPLIANCE-A,Call,Information request,"Consolidated request: UBO register, director ID and source of funds evidence; Go-live sign-off and operational contacts; Expected corridors, volumes and use-case confirmation",1,"Compliance (KYB/KYC), Account Management, Compliance Ops"
