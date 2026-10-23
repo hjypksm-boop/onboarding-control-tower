@@ -9,8 +9,9 @@ A fictional data set for a control tower that tracks B2B clients from deal close
 | File | Purpose |
 |---|---|
 | `schema.sql` | Table definitions (11 tables) |
-| `generate_data.py` | Builds the database and CSVs. Standard library only, seeded, so every run gives the same data |
-| `check_data.py` | Sanity checks and sample metric queries |
+| `metrics.sql` | Metric layer: SQLite views over the tables (see below) |
+| `generate_data.py` | Builds the database and CSVs, then loads the metric views. Standard library only, seeded, so every run gives the same data |
+| `check_data.py` | Sanity checks, plus a query against each metric view |
 | `control_tower.db` | Generated SQLite database |
 | `csv/` | One CSV per table |
 
@@ -60,7 +61,19 @@ Per-lane, per-track targets are in `stage_benchmarks`. Fast lane journeys have n
 | `daily_transactions` | Live journey × day | `txn_count`, `volume_usd`, `revenue_usd` |
 | `touchpoints` | Client request | `phase`, `requesting_team_id`, `request_type`, `is_bundled`, `teams_covered` |
 
-## Metric definitions (built in the next step)
+## Metric definitions
+
+These are implemented as views in `metrics.sql`. `v_as_of` holds the as-of date.
+
+| View | Grain | What it gives |
+|---|---|---|
+| `v_stage_sla` | Stage | `sla_status`: on track, at risk (open with 75% or more of its target used) or breached. Also `is_critical_path`: the last-finishing parallel track plus AM handoff |
+| `v_trapped_revenue` | Journey | In-flight and historic delay days and trapped revenue |
+| `v_ramp` | Live journey | Ramp shortfall, time to expected revenue, latest 7-day average as a share of expected revenue |
+| `v_second_product` | Client with a 2nd product | Days from first to second go-live, or forecast days if still onboarding |
+| `v_touchpoints` | Client | Post-sale touchpoint count and `cap_status`: ok, warning or breach |
+| `v_owner_workload` | Team member | Open, in-progress, blocked, not-started, breached, at-risk and critical-path stages. A shared client-level track counts once |
+
 
 - **Trapped revenue, in flight:** max(0, forecast go-live − target go-live) × expected daily revenue.
 - **Trapped revenue, historic:** max(0, actual go-live − target go-live) × expected daily revenue.

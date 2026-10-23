@@ -448,5 +448,13 @@ for table, data in rows.items():
 con.commit()
 for table in rows:
     print(f"{table:20s} {con.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]:>6}")
+
+# Metric layer: views over the loaded data
+with open(os.path.join(HERE, "metrics.sql")) as f:
+    con.executescript(f.read())
+as_of = con.execute("SELECT as_of_date FROM v_as_of").fetchone()[0]
+assert as_of == d(TODAY), f"metrics.sql as-of date {as_of} does not match TODAY {d(TODAY)}"
+views = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type = 'view' ORDER BY name")]
+print(f"\nViews loaded: {', '.join(views)}")
 con.close()
 print(f"\nDatabase written to {DB_PATH} (as of {TODAY})")

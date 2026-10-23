@@ -40,3 +40,43 @@ q("Integrity: in-flight journeys forecast in the past (should be 0)",
 q("Integrity: Fast lane rows with a contract track (should be 0)", """
 SELECT COUNT(*) FROM onboarding_stages s JOIN client_products cp USING (cp_id)
 WHERE cp.initial_lane='Fast' AND s.track='Contract'""")
+
+# ---------------------------------------------------------------------------
+# Metric layer (views from metrics.sql)
+# ---------------------------------------------------------------------------
+print("\n\n# Metric views")
+q("v_stage_sla: stages by state and SLA status", """
+SELECT CASE WHEN stage_status = 'Done' THEN 'Done' ELSE 'Open' END state, sla_status, COUNT(*) n
+FROM v_stage_sla GROUP BY 1, 2 ORDER BY 1, 2""")
+q("v_stage_sla: open critical-path stages breached, worst first (top 10)", """
+SELECT cp_id, track, owner_member_id, stage_status, target_days, days_used, days_over_target
+FROM v_stage_sla WHERE stage_status <> 'Done' AND is_critical_path = 1 AND sla_status = 'breached'
+ORDER BY days_over_target DESC LIMIT 10""")
+q("Integrity: journeys without a critical parallel track (should be 0)", """
+SELECT COUNT(*) FROM (SELECT cp_id FROM v_stage_sla GROUP BY cp_id
+                      HAVING SUM(is_critical_path = 1 AND track <> 'AM handoff') = 0)""")
+q("v_trapped_revenue: totals", """
+SELECT cp_status, COUNT(*) journeys,
+       SUM(COALESCE(in_flight_delay_days, historic_delay_days) > 0) late,
+       ROUND(SUM(trapped_in_flight_usd)) trapped_in_flight_usd, ROUND(SUM(trapped_historic_usd)) trapped_historic_usd
+FROM v_trapped_revenue GROUP BY 1""")
+q("v_trapped_revenue: top 5 in-flight journeys", """
+SELECT cp_id, client_name, product_id, current_lane, in_flight_delay_days, trapped_in_flight_usd
+FROM v_trapped_revenue WHERE cp_status = 'Onboarding' ORDER BY trapped_in_flight_usd DESC LIMIT 5""")
+q("Integrity: view in-flight trapped revenue minus raw-table calculation (should be 0)", """
+SELECT ROUND((SELECT SUM(trapped_in_flight_usd) FROM v_trapped_revenue)
+             - SUM(MAX(0, julianday(forecast_go_live_date) - julianday(target_go_live_date)) * expected_daily_revenue))
+FROM client_products WHERE cp_status = 'Onboarding'""")
+q("v_ramp", """
+SELECT cp_id, client_name, product_id, days_live, days_to_expected_revenue, ramp_shortfall_usd, latest_pct_of_expected
+FROM v_ramp ORDER BY reached_run_rate, days_to_expected_revenue DESC""")
+q("v_second_product", """
+SELECT client_name, first_product, second_product, second_status, days_to_second_product, forecast_days_to_second_product
+FROM v_second_product ORDER BY client_id""")
+q("v_touchpoints: clients by cap status", "SELECT cap_status, COUNT(*) clients FROM v_touchpoints GROUP BY 1 ORDER BY 2 DESC")
+q("v_touchpoints: warnings and breaches", """
+SELECT client_id, client_name, post_sale_touchpoints, bundled_post_sale, cap_status
+FROM v_touchpoints WHERE cap_status <> 'ok' ORDER BY post_sale_touchpoints DESC, client_id""")
+q("v_owner_workload: members with open stages", """
+SELECT member_id, open_stages, in_progress, blocked, not_started, breached, at_risk, on_critical_path, oldest_blocker_days
+FROM v_owner_workload WHERE open_stages > 0 ORDER BY open_stages DESC, blocked DESC""")

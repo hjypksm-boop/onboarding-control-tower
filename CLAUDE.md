@@ -17,8 +17,9 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | File | Purpose |
 |---|---|
 | `schema.sql` | DDL for the 11 tables |
-| `generate_data.py` | Builds `control_tower.db` and `csv/`. Seeded (`random.seed(42)`), so every run gives the same data |
-| `check_data.py` | Sanity checks and sample metric queries. Opens `control_tower.db` by relative path, so run it from the project root |
+| `metrics.sql` | Metric views: `v_as_of`, `v_stage_sla`, `v_trapped_revenue`, `v_ramp`, `v_second_product`, `v_touchpoints`, `v_owner_workload`. Uses DROP plus CREATE, so it's safe to re-run. Build new metrics here as views |
+| `generate_data.py` | Builds `control_tower.db` and `csv/`, then loads `metrics.sql` and checks that `v_as_of` matches `TODAY`. Seeded (`random.seed(42)`), so every run gives the same data |
+| `check_data.py` | Sanity checks, plus a query against each metric view. Opens `control_tower.db` by relative path, so run it from the project root |
 | `control_tower.db` | Generated and gitignored. Rebuild it rather than editing it |
 | `csv/` | One CSV per table. Committed |
 
