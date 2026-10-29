@@ -12,6 +12,8 @@ import random
 import sqlite3
 from datetime import date, timedelta
 
+import routing
+
 random.seed(42)
 TODAY = date(2026, 10, 18)          # "as of" date for the control tower
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +57,7 @@ LANES = [  # lane, target_days, contract_required, routing rule
     ("Exceptions", 75, 1, "USDC products or high-risk KYB (partner bank sign-off), or any journey stalled > 1.5x its lane target"),
 ]
 LANE_TARGET = {l[0]: l[1] for l in LANES}
+assert LANE_TARGET == routing.LANE_TARGET, "lane targets must match routing.py"
 
 PARALLEL_TRACKS = ["Contract", "Legal", "KYB-KYC", "Tech build",
                    "Compliance ops readiness", "Partner bank approval"]
@@ -89,7 +92,7 @@ VERIFY_FEE = 0.80  # USD per verification check
 
 # ---------------------------------------------------------------------------
 # Clients: (name, industry, segment, country, risk, entities, products)
-# Lanes are NOT hard-coded: route_lane() derives them from these attributes.
+# Lanes are NOT hard-coded: routing.route_lane() derives them from these attributes.
 # ---------------------------------------------------------------------------
 ONBOARDING_CLIENTS = [
     ("Lumen Tutors", "EdTech", "SMB", "GB", "Low", 1, ["VERIFY"]),
@@ -145,22 +148,14 @@ def d(x):
     return x.isoformat() if x else None
 
 
-def route_lane(segment, risk, entities, products):
-    """Rule-based lane routing (same rules the Lane router agent will use)."""
-    prods = [PRODUCT[p] for p in products]
-    if any(p[4] for p in prods):
-        return "Exceptions", "USDC product requires partner bank sign-off"
-    if risk == "High":
-        return "Exceptions", "High-risk KYB requires partner bank enhanced due diligence"
-    if any(p[0] in ("CARDS", "TRAVEL") for p in prods):
-        return "Complex", "Cards/Travel programme setup"
-    if len(products) > 1:
-        return "Complex", "Multi-product onboarding"
-    if entities >= 3:
-        return "Complex", f"{entities} legal entities to onboard"
-    if (not prods[0][3]) and risk == "Low" and segment != "Enterprise" and entities == 1:
-        return "Fast", "No-contract product, low risk, single entity"
-    return "Standard", "Contracted single product, low/medium risk"
+def products_info(product_ids):
+    """Product records in the shape routing.route_lane() expects."""
+    return [{"product_id": p, "contract_required": PRODUCT[p][3], "partner_bank_required": PRODUCT[p][4]}
+            for p in product_ids]
+
+
+def route_lane(segment, risk, entities, product_ids):
+    return routing.route_lane(segment, risk, entities, products_info(product_ids))
 
 
 def pick_member(team_id):
@@ -375,7 +370,7 @@ for i, (name, ind, seg, ctry, risk, ents, prods) in enumerate(ONBOARDING_CLIENTS
         target = start + timedelta(days=LANE_TARGET[lane])
         elapsed = (TODAY - start).days
         cur_lane, cur_reason = lane, reason
-        if lane != "Exceptions" and elapsed > 1.5 * LANE_TARGET[lane]:
+        if routing.should_escalate(lane, elapsed):
             cur_lane, cur_reason = "Exceptions", f"{reason}; escalated: stalled beyond 1.5x {lane} target"
         exp = expected_daily(p, seg)
         rows["client_products"].append((cp_id, client_id, p, 1, lane, cur_lane, cur_reason, d(signed),

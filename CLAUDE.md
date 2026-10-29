@@ -10,7 +10,7 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 - **Use the standard library only** unless the user approves a dependency. Ask before adding any package. Approved so far: `groq` and `python-dotenv`, for the agent layer only (`requirements.txt`). The data generator, views and checks stay standard-library only.
 - **Never commit API keys** or other secrets. `GROQ_API_KEY` lives in `.env`, which is gitignored. `.env.example` is the committed template and must stay empty of real values.
 - **The agent layer** (`llm.py` and `agents.py`) uses the Groq SDK with `openai/gpt-oss-120b`, which `GROQ_MODEL` can override. The user's Groq account has no Llama chat model. gpt-oss is a reasoning model, so `llm.py` sets low reasoning effort and adds token headroom. **Code writes every figure and every sentence that states or combines figures,** including the brief headline, nudge bullets and blocker lists. The LLM only classifies edge cases and drafts actions, prioritisation and tone, through `llm.draft()`. Drafts with any digit outside a record ID are rejected. Drafts are labelled `[DRAFT – review before sending]`, and code-written fallback text is used with no key or on an API error. Keep it that way: never let the LLM reword a line that contains a figure.
-- Lanes come from `route_lane()`. Never hard-code a lane for a client.
+- Lanes come from `routing.route_lane()` (`routing.py`), the single source of the routing and escalation rules. The generator and the lane router agent both import it. Never hard-code a lane for a client, and never copy the rules elsewhere.
 - Don't push to a remote unless the user asks.
 
 ## Files and commands
@@ -26,24 +26,26 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | `csv/` | One CSV per table. Committed |
 | `requirements.txt` / `.env.example` | Agent-layer dependencies, and the committed template for `.env` |
 | `llm.py` | Groq wrapper: loads `.env`, provides `draft()` (figure-free text with the number guard and the DRAFT label) and `classify()` (returns only an allowed label), and falls back to code-written text |
-| `agents.py` | Agents: blocker triage (keyword rules, with the LLM only for edge cases), blocker summary, owner nudges, daily brief |
+| `agents.py` | Agents: blocker triage (keyword rules, with the LLM only for edge cases), blocker summary, owner nudges, daily brief, lane router (`lanes`) |
+| `routing.py` | `route_lane()`, `should_escalate()` / `escalation_day()` (escalates on the first day beyond 1.5× the lane target), and `boundary_flips()` (one-step attribute changes that move a lane). `LANE_TARGET` must match `LANES` in the generator, which asserts it |
 | `tests/test_agents.py` | Guardrail tests (standard library `unittest`, no API calls): headline figures equal the views, the draft guard rejects figures, and the LLM changes no line with a figure |
 | `build_dashboard.py`, `dashboard/template.html` | Static dashboard, built to `docs/index.html` and served by GitHub Pages. Standard library only, with inline SVG and vanilla JS (no CDN). Every figure comes from SQL against the views. Text goes in via `textContent` only. The palette follows the dataviz method: categorical slots 1–3 validated for light and dark, status colours always with an icon and label, a table view for every chart. Output is deterministic. After changing the data, views or template, rerun it and commit `docs/index.html`, otherwise CI fails |
 | `tests/test_dashboard.py` | Dashboard figures equal the views, and the embedded JSON is safe and complete |
+| `tests/test_routing.py` | Routing rule order, escalation threshold, boundary flips, every stored lane matching the rules, and the lane report staying code-written |
 
 ```sh
 source .venv/bin/activate
 pip install -r requirements.txt
 python generate_data.py   # rebuilds DB + CSVs (deletes existing DB first)
 python check_data.py      # all integrity checks should return 0
-python agents.py          # or: classify | blockers | nudges | brief
+python agents.py          # or: classify | blockers | nudges | brief | lanes
 python -m unittest discover -s tests -v
 python build_dashboard.py # rebuild docs/index.html, then commit it
 ```
 
 Expected counts: 40 clients (30 onboarding, 10 live), 49 journeys (35 in flight), 288 stages, 2,885 transaction days, 156 touchpoints.
 
-## Lanes and routing (`route_lane()`)
+## Lanes and routing (`routing.py`)
 
 The rules are checked in this order, and the first match wins:
 

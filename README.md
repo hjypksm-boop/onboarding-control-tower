@@ -13,6 +13,7 @@ A fictional data set for a control tower that tracks B2B clients from deal close
 | `schema.sql` | Table definitions (11 tables) |
 | `metrics.sql` | Metric layer: SQLite views over the tables (see below) |
 | `generate_data.py` | Builds the database and CSVs, then loads the metric views. Standard library only, seeded, so every run gives the same data |
+| `routing.py` | Lane routing rules and the escalation rule, shared by the generator and the lane router agent |
 | `check_data.py` | Sanity checks, plus a query against each metric view |
 | `build_dashboard.py` | Builds the static dashboard `docs/index.html` from the views (template in `dashboard/template.html`) |
 | `control_tower.db` | Generated SQLite database |
@@ -33,12 +34,12 @@ CI (`.github/workflows/ci.yml`) runs on every push to `main` and every PR, on Py
 
 ## Lanes
 
-Lanes are derived from client attributes by `route_lane()`, never hard-coded.
+Lanes are derived from client attributes by `route_lane()` in `routing.py`, never hard-coded. Rules are checked in the order below, and the first match wins. The generator and the lane router agent use the same module.
 
 | Lane | Rule | Target |
 |---|---|---|
 | Fast | Single no-contract product (Verify, Wallets, Pay-ins), low risk, SMB or mid-market, single entity | 10 days |
-| Standard | Contracted single product, low or medium risk | 30 days |
+| Standard | Any other single product: a contracted product, or a no-contract product for a medium-risk, Enterprise or 2-entity client | 30 days |
 | Complex | Cards or Travel, multi-product onboarding, or 3+ legal entities | 60 days |
 | Exceptions | USDC products or high-risk KYB (partner bank sign-off), or any journey stalled beyond 1.5× its lane target | 75 days |
 
@@ -123,6 +124,7 @@ Every chart has a hover tooltip, a keyboard-focusable equivalent and a table vie
 | `blockers` | Blocked stages, grouped by who we're waiting on | The grouped list with days blocked, SLA and critical path | One next action per group |
 | `nudges` | One message per owner with breached, at-risk or blocked stages | To, Subject, stage bullets, the ask, sign-off | The opening line: greeting and which stage to tackle first |
 | `brief` | Daily brief | Title, headline, and every section: revenue at risk, onboarding health, live revenue, touchpoints, team load | The recommended actions |
+| `lanes` | Lane router: re-routes every journey with `routing.py`, lists escalations that are done, due now or due within 7 days, and journeys one client attribute away from a quicker lane | The routing check, escalations and quicker-lane cases, with target days saved | A short review note |
 
 ### LLM guardrails
 
@@ -136,7 +138,7 @@ Setup:
 ```sh
 pip install -r requirements.txt
 cp .env.example .env      # then set GROQ_API_KEY; .env is gitignored
-python agents.py          # all agents, or: classify | blockers | nudges | brief
+python agents.py          # all agents, or: classify | blockers | nudges | brief | lanes
 python -m unittest discover -s tests -v   # agent guardrail and dashboard tests (no API calls)
 python build_dashboard.py                # rebuild docs/index.html
 ```

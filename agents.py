@@ -1,12 +1,13 @@
 """
-Agent layer for the control tower: blocker triage, blocker summary, owner nudges and the daily brief.
+Agent layer for the control tower: blocker triage, blocker summary, owner nudges, the daily brief
+and the lane router.
 
 Every figure is queried from the metric views (metrics.sql) and every sentence that states or
 combines figures is written here in code. The LLM (llm.py) only drafts recommended actions,
 prioritisation and tone, with no figures, and that text is labelled as a draft for human review.
 Without GROQ_API_KEY the code-written fallback text is used instead.
 
-Run:  python agents.py [classify|blockers|nudges|brief|all]
+Run:  python agents.py [classify|blockers|nudges|brief|lanes|all]
 """
 import argparse
 import os
@@ -14,6 +15,7 @@ import sqlite3
 from collections import Counter
 
 import llm
+import routing
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(HERE, "control_tower.db")
@@ -304,10 +306,108 @@ that stage. No heading.""", context, brief_actions_template(items, f, ramp, load
 
 
 # ---------------------------------------------------------------------------
+# 5. Lane router: re-checks every journey against routing.py and flags escalations and
+# boundary cases. Code writes all of it; the LLM only drafts a figure-free review note.
+# ---------------------------------------------------------------------------
+ESCALATION_WARNING_DAYS = 7
+
+
+def lane_journeys():
+    """Every journey with the client attributes it was routed on, re-routed with routing.py."""
+    rows = query("""
+        SELECT cp.cp_id, cp.client_id, c.client_name, c.segment, c.risk_rating, c.entity_count,
+               cp.product_sequence, cp.product_id, cp.onboarding_start_date, cp.initial_lane, cp.current_lane,
+               cp.cp_status, CAST(julianday(a.as_of_date) - julianday(cp.onboarding_start_date) AS INTEGER) AS elapsed
+        FROM client_products cp JOIN clients c USING (client_id) CROSS JOIN v_as_of a
+        ORDER BY cp.cp_id""")
+    products = {p["product_id"]: p for p in query(
+        "SELECT product_id, contract_required, partner_bank_required FROM products")}
+    for r in rows:
+        # products onboarded together share a client and start date; a second product routes on its own
+        together = [x["product_id"] for x in rows
+                    if x["client_id"] == r["client_id"] and x["onboarding_start_date"] == r["onboarding_start_date"]]
+        r["products"] = [products[p] for p in together]
+        r["route_entities"] = 1 if r["product_sequence"] == 2 else r["entity_count"]  # entities already onboarded
+        r["routed_lane"], r["routed_reason"] = routing.route_lane(
+            r["segment"], r["risk_rating"], r["route_entities"], r["products"])
+        r["flips"] = routing.boundary_flips(r["segment"], r["risk_rating"], r["route_entities"], r["products"])
+        r["escalation_day"] = routing.escalation_day(r["initial_lane"])
+    return rows
+
+
+def lane_facts(rows):
+    """Code-written lane report. Returns (text, groups) where groups feed the review note."""
+    in_flight = [r for r in rows if r["cp_status"] == "Onboarding"]
+    mismatched = [r for r in rows if r["routed_lane"] != r["initial_lane"]]
+    escalated = [r for r in in_flight if r["current_lane"] != r["initial_lane"]]
+    not_escalated = [r for r in in_flight if r["current_lane"] == r["initial_lane"] and r["escalation_day"]]
+    due = [r for r in not_escalated if routing.should_escalate(r["initial_lane"], r["elapsed"])]
+    soon = [r for r in not_escalated if r not in due
+            and r["escalation_day"] - r["elapsed"] <= ESCALATION_WARNING_DAYS]
+    for r in in_flight:  # only flips to a quicker lane are actionable; most attributes could also get worse
+        target = routing.LANE_TARGET[r["routed_lane"]]
+        r["faster"] = [(change, lane, target - routing.LANE_TARGET[lane]) for change, lane in r["flips"]
+                       if routing.LANE_TARGET[lane] < target]
+    boundary = [r for r in in_flight if r["faster"]]
+
+    name = lambda r: f"{r['cp_id']} {r['client_name']}"  # noqa: E731
+    lines = ["Lane router", "",
+             f"Routing check: {len(rows)} journeys re-routed with routing.py; "
+             f"{len(mismatched)} differ from the stored lane."]
+    lines += [f"- {name(r)}: stored {r['initial_lane']}, rules give {r['routed_lane']} ({r['routed_reason']})"
+              for r in mismatched]
+    lines += ["", f"Escalations (in flight; a journey escalates to Exceptions after "
+                  f"{routing.ESCALATION_FACTOR}x its lane target)"]
+    lines += [f"- Escalated: {name(r)}, {r['initial_lane']} to {r['current_lane']} "
+              f"(day {r['elapsed']}; threshold day {r['escalation_day']})" for r in escalated]
+    lines += [f"- Escalate now: {name(r)}, {r['initial_lane']} lane, day {r['elapsed']} "
+              f"(threshold day {r['escalation_day']})" for r in due]
+    lines += [f"- Escalates in {days(r['escalation_day'] - r['elapsed'])}: {name(r)}, {r['initial_lane']} lane, "
+              f"day {r['elapsed']} of {r['escalation_day']}" for r in soon]
+    if not (due or soon):
+        lines.append(f"- No other journey escalates in the next {days(ESCALATION_WARNING_DAYS)}.")
+    lines += ["", "Could route faster (one client attribute away from a quicker lane; worth re-checking that attribute)"]
+    for r in boundary:
+        ents = f"{r['route_entities']} entit{'y' if r['route_entities'] == 1 else 'ies'}"
+        lines.append(f"- {name(r)}: {r['routed_lane']} ({r['segment']}, {r['risk_rating']} risk, {ents}); "
+                     + "; ".join(f"{change} would route to {lane} (target {days(saved)} shorter)"
+                                 for change, lane, saved in r["faster"]))
+    if not boundary:
+        lines.append("- None.")
+    return "\n".join(lines), {"mismatched": mismatched, "due": due, "soon": soon, "boundary": boundary}
+
+
+def lane_note_template(groups):
+    ids = lambda rs: ", ".join(r["cp_id"] for r in rs)  # noqa: E731
+    lines = []
+    if groups["mismatched"]:
+        lines.append(f"- Correct the stored lane for {ids(groups['mismatched'])}.")
+    if groups["due"]:
+        lines.append(f"- Move {ids(groups['due'])} to Exceptions.")
+    if groups["soon"]:
+        lines.append(f"- Unblock {ids(groups['soon'])} before "
+                     + ("it escalates." if len(groups["soon"]) == 1 else "they escalate."))
+    if groups["boundary"]:
+        lines.append(f"- Re-check the risk rating, segment or entity count for {ids(groups['boundary'])}: "
+                     "each is one change away from a quicker lane.")
+    return "\n".join(lines) or "- No routing action needed."
+
+
+def lane_router():
+    facts, groups = lane_facts(lane_journeys())
+    note, source = llm.draft("""
+You support the onboarding lead at a fintech's B2B onboarding control tower. From the lane router report,
+write up to three "-" bullets on what to review: escalations that are due or close, and which journeys
+could route to a quicker lane if a client attribute were re-checked, saying which attribute.
+Name the journeys by ID. No heading.""", facts, lane_note_template(groups))
+    return f"{facts}\n\nReview note\n{note}", source
+
+
+# ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("agent", nargs="?", default="all",
-                        choices=["classify", "blockers", "nudges", "brief", "all"])
+                        choices=["classify", "blockers", "nudges", "brief", "lanes", "all"])
     agent = parser.parse_args().agent
 
     print(f"[{llm.source_label()}]")
@@ -321,6 +421,8 @@ def main():
         sections.append("Nudges\n\n" + "\n\n---\n\n".join(text for text, _ in draft_nudges()))
     if agent in ("brief", "all"):
         sections.append(daily_brief(items)[0])
+    if agent in ("lanes", "all"):
+        sections.append(lane_router()[0])
     print(("\n\n" + "=" * 72 + "\n\n").join(sections))
 
 
