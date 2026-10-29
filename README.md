@@ -93,6 +93,33 @@ These give the agents and dashboard something real to find:
 - **Six clients** breach the 3-touchpoint cap. About a third of touchpoints are bundled, multi-team asks.
 - **Second-product journeys** take from 52 to 121 days after the first product goes live.
 
+## Agent layer
+
+`agents.py` runs four agents on top of the views. The LLM is `openai/gpt-oss-120b` on Groq (override with `GROQ_MODEL`), called through `llm.py`. **Every figure comes from the SQL views, and every sentence that states or combines figures is written by code.**
+
+| Agent | What it does | Code writes | LLM drafts |
+|---|---|---|---|
+| `classify` | Tags each blocked stage as waiting on Client, Internal or Partner bank | Keyword rules decide the clear cases | A label for edge cases (no keyword match, or conflicting matches), which must be one of the allowed labels |
+| `blockers` | Blocked stages, grouped by who we're waiting on | The grouped list with days blocked, SLA and critical path | One next action per group |
+| `nudges` | One message per owner with breached, at-risk or blocked stages | To, Subject, stage bullets, the ask, sign-off | The opening line: greeting and which stage to tackle first |
+| `brief` | Daily brief | Title, headline, and every section: revenue at risk, onboarding health, live revenue, touchpoints, team load | The recommended actions |
+
+### LLM guardrails
+
+- **Number guard:** LLM drafts may not contain any digits apart from record IDs such as `CP-0024`. A draft that includes a count, amount, percentage, duration or date is rejected, and the code-written fallback is used. The LLM therefore can't restate figures, or combine them wrongly.
+- **Code-owned facts and headline:** the brief's headline and every line with a figure come from SQL queries against the views. `tests/test_agents.py` checks that the headline's figures equal the views exactly, and that turning the LLM on changes no line containing a figure.
+- **Human review label:** every piece of LLM-written text starts with `[DRAFT – review before sending]`. Nothing is sent automatically.
+- **Template fallback:** with no `GROQ_API_KEY`, or if the API call fails, code-written text replaces each draft (no label), so the app runs offline.
+
+Setup:
+
+```sh
+pip install -r requirements.txt
+cp .env.example .env      # then set GROQ_API_KEY; .env is gitignored
+python agents.py          # all agents, or: classify | blockers | nudges | brief
+python -m unittest discover -s tests -v   # guardrail tests (no API calls)
+```
+
 ## Assumptions
 
 - All durations are calendar days.

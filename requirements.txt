@@ -1,0 +1,3 @@
+# Agent layer only. The data generator, metric views and checks use the standard library.
+groq>=1.7,<2
+python-dotenv>=1.2,<2

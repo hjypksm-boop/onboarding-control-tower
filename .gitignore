@@ -3,8 +3,10 @@
 __pycache__/
 *.pyc
 
-# Secrets
+# Secrets (.env.example is the committed template)
 .env
+.env.*
+!.env.example
 
 # macOS
 .DS_Store

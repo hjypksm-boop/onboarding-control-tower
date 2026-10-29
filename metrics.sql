@@ -19,6 +19,7 @@ CREATE VIEW v_as_of AS SELECT '2026-10-18' AS as_of_date;
 -- ---------- Stage SLA and critical path ----------
 -- target_days  = planned end - planned start (the stage_benchmarks target for the routed lane)
 -- days_used    = days from start (actual, else planned) to actual end (Done) or the as-of date (open)
+-- days_blocked = as-of date - blocker_since (NULL unless a blocker is recorded)
 -- sla_status   = breached (days_used > target), at risk (open and >= 75% of target used), else on track
 -- is_critical_path = the parallel track(s) finishing last for the journey, plus AM handoff,
 --                    which always runs after them
@@ -31,6 +32,7 @@ WITH base AS (
            COALESCE(s.actual_end_date, s.forecast_end_date) AS expected_end_date,
            MAX(0, CAST(julianday(CASE WHEN s.stage_status = 'Done' THEN s.actual_end_date ELSE a.as_of_date END)
                        - julianday(COALESCE(s.actual_start_date, s.planned_start_date)) AS INTEGER)) AS days_used,
+           CAST(julianday(a.as_of_date) - julianday(s.blocker_since) AS INTEGER) AS days_blocked,
            CASE WHEN s.track IN ('Contract', 'Legal', 'KYB-KYC', 'Partner bank approval')
                 THEN cp.client_id || ':' || s.track || ':' || cp.onboarding_start_date
                 ELSE s.stage_id END AS work_item_id
@@ -51,7 +53,7 @@ SELECT stage_id, cp_id, client_id, current_lane, cp_status, track, work_item_id,
             WHEN expected_end_date = MAX(CASE WHEN track <> 'AM handoff' THEN expected_end_date END)
                                      OVER (PARTITION BY cp_id) THEN 1
             ELSE 0 END AS is_critical_path,
-       blocker_note, blocker_since
+       blocker_note, blocker_since, days_blocked
 FROM base;
 
 -- ---------- Trapped revenue ----------
@@ -166,8 +168,7 @@ SELECT m.member_id, m.member_label, m.team_id, m.role,
        COUNT(DISTINCT CASE WHEN s.sla_status = 'breached' THEN s.work_item_id END) AS breached,
        COUNT(DISTINCT CASE WHEN s.sla_status = 'at risk' THEN s.work_item_id END) AS at_risk,
        COUNT(DISTINCT CASE WHEN s.is_critical_path = 1 THEN s.work_item_id END) AS on_critical_path,
-       MAX(CAST(julianday(a.as_of_date) - julianday(s.blocker_since) AS INTEGER)) AS oldest_blocker_days
+       MAX(s.days_blocked) AS oldest_blocker_days
 FROM team_members m
-CROSS JOIN v_as_of a
 LEFT JOIN v_stage_sla s ON s.owner_member_id = m.member_id AND s.stage_status <> 'Done'
 GROUP BY m.member_id;

@@ -7,8 +7,9 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 ## Rules
 
 - **All numbers are calculated in SQL or Python, never by an LLM.** Any agent or LLM layer may only explain, summarise or route numbers that code has already computed. It must never estimate, add up or invent figures.
-- **Use the standard library only** unless the user approves a dependency. Ask before adding any package.
-- **Never commit API keys** or other secrets. Keep them in `.env`, which is gitignored.
+- **Use the standard library only** unless the user approves a dependency. Ask before adding any package. Approved so far: `groq` and `python-dotenv`, for the agent layer only (`requirements.txt`). The data generator, views and checks stay standard-library only.
+- **Never commit API keys** or other secrets. `GROQ_API_KEY` lives in `.env`, which is gitignored. `.env.example` is the committed template and must stay empty of real values.
+- **The agent layer** (`llm.py` and `agents.py`) uses the Groq SDK with `openai/gpt-oss-120b`, which `GROQ_MODEL` can override. The user's Groq account has no Llama chat model. gpt-oss is a reasoning model, so `llm.py` sets low reasoning effort and adds token headroom. **Code writes every figure and every sentence that states or combines figures,** including the brief headline, nudge bullets and blocker lists. The LLM only classifies edge cases and drafts actions, prioritisation and tone, through `llm.draft()`. Drafts with any digit outside a record ID are rejected. Drafts are labelled `[DRAFT – review before sending]`, and code-written fallback text is used with no key or on an API error. Keep it that way: never let the LLM reword a line that contains a figure.
 - Lanes come from `route_lane()`. Never hard-code a lane for a client.
 - Don't push to a remote unless the user asks.
 
@@ -22,11 +23,18 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | `check_data.py` | Sanity checks, plus a query against each metric view. Opens `control_tower.db` by relative path, so run it from the project root |
 | `control_tower.db` | Generated and gitignored. Rebuild it rather than editing it |
 | `csv/` | One CSV per table. Committed |
+| `requirements.txt` / `.env.example` | Agent-layer dependencies, and the committed template for `.env` |
+| `llm.py` | Groq wrapper: loads `.env`, provides `draft()` (figure-free text with the number guard and the DRAFT label) and `classify()` (returns only an allowed label), and falls back to code-written text |
+| `agents.py` | Agents: blocker triage (keyword rules, with the LLM only for edge cases), blocker summary, owner nudges, daily brief |
+| `tests/test_agents.py` | Guardrail tests (standard library `unittest`, no API calls): headline figures equal the views, the draft guard rejects figures, and the LLM changes no line with a figure |
 
 ```sh
 source .venv/bin/activate
+pip install -r requirements.txt
 python generate_data.py   # rebuilds DB + CSVs (deletes existing DB first)
-python check_data.py      # both integrity checks at the end should return 0
+python check_data.py      # all integrity checks should return 0
+python agents.py          # or: classify | blockers | nudges | brief
+python -m unittest discover -s tests -v
 ```
 
 Expected counts: 40 clients (30 onboarding, 10 live), 49 journeys (35 in flight), 288 stages, 2,885 transaction days, 156 touchpoints.
