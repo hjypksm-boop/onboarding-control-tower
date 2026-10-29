@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install agent-layer dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build database and metric views
+        run: python generate_data.py
+
+      - name: Generated CSVs match the committed ones (generator is deterministic)
+        run: git diff --exit-code --stat csv/
+
+      - name: Integrity checks
+        run: python check_data.py
+
+      - name: Guardrail tests (no API calls)
+        run: python -m unittest discover -s tests -v
+
+      # No GROQ_API_KEY in CI: proves the app runs on the code-written fallback
+      - name: Agents smoke test (template mode)
+        run: python agents.py > /dev/null

@@ -1,15 +1,30 @@
-"""Quick sanity checks on control_tower.db. Run: python check_data.py"""
-import sqlite3
+"""Quick sanity checks on control_tower.db. Run: python check_data.py
 
-con = sqlite3.connect("control_tower.db")
+Exits with status 1 if any integrity check (should be 0) fails, so CI can gate on it.
+"""
+import os
+import sqlite3
+import sys
+
+con = sqlite3.connect(os.path.join(os.path.dirname(os.path.abspath(__file__)), "control_tower.db"))
+failures = []
 
 
 def q(title, sql):
     cur = con.execute(sql)
     print(f"\n## {title}")
     print(" | ".join(c[0] for c in cur.description))
-    for r in cur:
+    rows = cur.fetchall()
+    for r in rows:
         print(" | ".join(str(x) for x in r))
+    return rows
+
+
+def zero(title, sql):
+    """Integrity check: the query must return a single 0."""
+    rows = q(f"Integrity: {title} (should be 0)", sql)
+    if rows[0][0] != 0:
+        failures.append(title)
 
 
 q("Journeys in flight by lane", "SELECT current_lane, COUNT(*) n FROM client_products WHERE cp_status='Onboarding' GROUP BY 1")
@@ -35,9 +50,9 @@ SELECT a.client_id, a.product_id first, b.product_id second, b.cp_status,
        CAST(julianday(b.actual_go_live_date) - julianday(a.actual_go_live_date) AS INT) days
 FROM client_products a JOIN client_products b
   ON a.client_id = b.client_id AND a.product_sequence = 1 AND b.product_sequence = 2""")
-q("Integrity: in-flight journeys forecast in the past (should be 0)",
-  "SELECT COUNT(*) FROM client_products WHERE cp_status='Onboarding' AND forecast_go_live_date <= '2026-10-18'")
-q("Integrity: Fast lane rows with a contract track (should be 0)", """
+zero("in-flight journeys forecast in the past",
+     "SELECT COUNT(*) FROM client_products, v_as_of WHERE cp_status='Onboarding' AND forecast_go_live_date <= as_of_date")
+zero("Fast lane rows with a contract track", """
 SELECT COUNT(*) FROM onboarding_stages s JOIN client_products cp USING (cp_id)
 WHERE cp.initial_lane='Fast' AND s.track='Contract'""")
 
@@ -52,7 +67,7 @@ q("v_stage_sla: open critical-path stages breached, worst first (top 10)", """
 SELECT cp_id, track, owner_member_id, stage_status, target_days, days_used, days_over_target
 FROM v_stage_sla WHERE stage_status <> 'Done' AND is_critical_path = 1 AND sla_status = 'breached'
 ORDER BY days_over_target DESC LIMIT 10""")
-q("Integrity: journeys without a critical parallel track (should be 0)", """
+zero("journeys without a critical parallel track", """
 SELECT COUNT(*) FROM (SELECT cp_id FROM v_stage_sla GROUP BY cp_id
                       HAVING SUM(is_critical_path = 1 AND track <> 'AM handoff') = 0)""")
 q("v_trapped_revenue: totals", """
@@ -63,7 +78,7 @@ FROM v_trapped_revenue GROUP BY 1""")
 q("v_trapped_revenue: top 5 in-flight journeys", """
 SELECT cp_id, client_name, product_id, current_lane, in_flight_delay_days, trapped_in_flight_usd
 FROM v_trapped_revenue WHERE cp_status = 'Onboarding' ORDER BY trapped_in_flight_usd DESC LIMIT 5""")
-q("Integrity: view in-flight trapped revenue minus raw-table calculation (should be 0)", """
+zero("view in-flight trapped revenue minus raw-table calculation", """
 SELECT ROUND((SELECT SUM(trapped_in_flight_usd) FROM v_trapped_revenue)
              - SUM(MAX(0, julianday(forecast_go_live_date) - julianday(target_go_live_date)) * expected_daily_revenue))
 FROM client_products WHERE cp_status = 'Onboarding'""")
@@ -80,3 +95,9 @@ FROM v_touchpoints WHERE cap_status <> 'ok' ORDER BY post_sale_touchpoints DESC,
 q("v_owner_workload: members with open stages", """
 SELECT member_id, open_stages, in_progress, blocked, not_started, breached, at_risk, on_critical_path, oldest_blocker_days
 FROM v_owner_workload WHERE open_stages > 0 ORDER BY open_stages DESC, blocked DESC""")
+
+print()
+if failures:
+    print(f"FAILED integrity checks: {', '.join(failures)}")
+    sys.exit(1)
+print("All integrity checks passed.")

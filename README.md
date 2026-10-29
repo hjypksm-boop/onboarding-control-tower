@@ -1,5 +1,7 @@
 # B2B Onboarding-to-Revenue Control Tower — Data set and schema
 
+[![CI](https://github.com/hjypksm-boop/onboarding-control-tower/actions/workflows/ci.yml/badge.svg)](https://github.com/hjypksm-boop/onboarding-control-tower/actions/workflows/ci.yml)
+
 A fictional data set for a control tower that tracks B2B clients from deal close through parallel onboarding, go-live, revenue ramp and second-product adoption. All companies, people and figures are made up.
 
 **As-of date:** 18 Oct 2026. **Database:** SQLite (`control_tower.db`); the schema is written to port to Postgres.
@@ -15,7 +17,9 @@ A fictional data set for a control tower that tracks B2B clients from deal close
 | `control_tower.db` | Generated SQLite database |
 | `csv/` | One CSV per table |
 
-Regenerate: `python generate_data.py`, then `python check_data.py`.
+Regenerate: `python generate_data.py`, then `python check_data.py` (exits with status 1 if any integrity check fails).
+
+CI (`.github/workflows/ci.yml`) runs on every push to `main` and every PR, on Python 3.12 and 3.13. It rebuilds the data, fails if the generated CSVs differ from the committed ones, runs the integrity checks and guardrail tests, and smoke-tests the agents in template mode. No API key is used.
 
 ## What's in it
 

@@ -20,7 +20,8 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | `schema.sql` | DDL for the 11 tables |
 | `metrics.sql` | Metric views: `v_as_of`, `v_stage_sla`, `v_trapped_revenue`, `v_ramp`, `v_second_product`, `v_touchpoints`, `v_owner_workload`. Uses DROP plus CREATE, so it's safe to re-run. Build new metrics here as views |
 | `generate_data.py` | Builds `control_tower.db` and `csv/`, then loads `metrics.sql` and checks that `v_as_of` matches `TODAY`. Seeded (`random.seed(42)`), so every run gives the same data |
-| `check_data.py` | Sanity checks, plus a query against each metric view. Opens `control_tower.db` by relative path, so run it from the project root |
+| `check_data.py` | Sanity checks, plus a query against each metric view. Exits with status 1 if any integrity check fails. Works from any directory |
+| `.github/workflows/ci.yml` | CI on push and PR (Python 3.12 and 3.13): rebuild the data, `git diff --exit-code csv/` (the generator must stay deterministic), integrity checks, tests, agents smoke test without a key. If you change the generator on purpose, commit the regenerated CSVs |
 | `control_tower.db` | Generated and gitignored. Rebuild it rather than editing it |
 | `csv/` | One CSV per table. Committed |
 | `requirements.txt` / `.env.example` | Agent-layer dependencies, and the committed template for `.env` |
