@@ -14,12 +14,13 @@ A fictional data set for a control tower that tracks B2B clients from deal close
 | `metrics.sql` | Metric layer: SQLite views over the tables (see below) |
 | `generate_data.py` | Builds the database and CSVs, then loads the metric views. Standard library only, seeded, so every run gives the same data |
 | `check_data.py` | Sanity checks, plus a query against each metric view |
+| `build_dashboard.py` | Builds the static dashboard `docs/index.html` from the views (template in `dashboard/template.html`) |
 | `control_tower.db` | Generated SQLite database |
 | `csv/` | One CSV per table |
 
 Regenerate: `python generate_data.py`, then `python check_data.py` (exits with status 1 if any integrity check fails).
 
-CI (`.github/workflows/ci.yml`) runs on every push to `main` and every PR, on Python 3.12 and 3.13. It rebuilds the data, fails if the generated CSVs differ from the committed ones, runs the integrity checks and guardrail tests, and smoke-tests the agents in template mode. No API key is used.
+CI (`.github/workflows/ci.yml`) runs on every push to `main` and every PR, on Python 3.12 and 3.13. It rebuilds the data, fails if the generated CSVs differ from the committed ones, runs the integrity checks and tests, checks the committed dashboard is up to date, and smoke-tests the agents in template mode. No API key is used.
 
 ## What's in it
 
@@ -97,6 +98,21 @@ These give the agents and dashboard something real to find:
 - **Six clients** breach the 3-touchpoint cap. About a third of touchpoints are bundled, multi-team asks.
 - **Second-product journeys** take from 52 to 121 days after the first product goes live.
 
+## Dashboard
+
+**Live:** https://hjypksm-boop.github.io/onboarding-control-tower/ (GitHub Pages, served from `docs/`).
+
+`python build_dashboard.py` writes one self-contained page, `docs/index.html`, from the views. It uses the standard library, inline SVG and vanilla JavaScript, with no CDN or build step. It shows:
+
+- **Headline tiles:** trapped revenue in flight and historic, breached and blocked stages, touchpoint breaches, and live journeys below run-rate.
+- **Trapped revenue by journey:** ranked bars.
+- **Journey timeline:** pick any in-flight journey to see its parallel tracks. The critical path is highlighted, with planned-end ticks, and the part after the as-of date shows as a forecast.
+- **Open stages by SLA status per track, and team load per owner:** stacked bars.
+- **Revenue ramp:** 7-day average as a share of expected revenue, highlighting the two clients that never reach the 90% run-rate.
+- **Post-sale touchpoints per client, and time to second product.**
+
+Every chart has a hover tooltip, a keyboard-focusable equivalent and a table view. Status colours always come with an icon and a label. The colours come from a categorical palette checked for colour-blind safety, with separate steps for light and dark mode. The build is deterministic, and CI fails if the committed page is out of date.
+
 ## Agent layer
 
 `agents.py` runs four agents on top of the views. The LLM is `openai/gpt-oss-120b` on Groq (override with `GROQ_MODEL`), called through `llm.py`. **Every figure comes from the SQL views, and every sentence that states or combines figures is written by code.**
@@ -121,7 +137,8 @@ Setup:
 pip install -r requirements.txt
 cp .env.example .env      # then set GROQ_API_KEY; .env is gitignored
 python agents.py          # all agents, or: classify | blockers | nudges | brief
-python -m unittest discover -s tests -v   # guardrail tests (no API calls)
+python -m unittest discover -s tests -v   # agent guardrail and dashboard tests (no API calls)
+python build_dashboard.py                # rebuild docs/index.html
 ```
 
 ## Assumptions

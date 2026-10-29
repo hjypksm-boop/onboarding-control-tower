@@ -28,6 +28,8 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | `llm.py` | Groq wrapper: loads `.env`, provides `draft()` (figure-free text with the number guard and the DRAFT label) and `classify()` (returns only an allowed label), and falls back to code-written text |
 | `agents.py` | Agents: blocker triage (keyword rules, with the LLM only for edge cases), blocker summary, owner nudges, daily brief |
 | `tests/test_agents.py` | Guardrail tests (standard library `unittest`, no API calls): headline figures equal the views, the draft guard rejects figures, and the LLM changes no line with a figure |
+| `build_dashboard.py`, `dashboard/template.html` | Static dashboard, built to `docs/index.html` and served by GitHub Pages. Standard library only, with inline SVG and vanilla JS (no CDN). Every figure comes from SQL against the views. Text goes in via `textContent` only. The palette follows the dataviz method: categorical slots 1–3 validated for light and dark, status colours always with an icon and label, a table view for every chart. Output is deterministic. After changing the data, views or template, rerun it and commit `docs/index.html`, otherwise CI fails |
+| `tests/test_dashboard.py` | Dashboard figures equal the views, and the embedded JSON is safe and complete |
 
 ```sh
 source .venv/bin/activate
@@ -36,6 +38,7 @@ python generate_data.py   # rebuilds DB + CSVs (deletes existing DB first)
 python check_data.py      # all integrity checks should return 0
 python agents.py          # or: classify | blockers | nudges | brief
 python -m unittest discover -s tests -v
+python build_dashboard.py # rebuild docs/index.html, then commit it
 ```
 
 Expected counts: 40 clients (30 onboarding, 10 live), 49 journeys (35 in flight), 288 stages, 2,885 transaction days, 156 touchpoints.

@@ -33,8 +33,11 @@ jobs:
       - name: Integrity checks
         run: python check_data.py
 
-      - name: Guardrail tests (no API calls)
+      - name: Tests (no API calls)
         run: python -m unittest discover -s tests -v
+
+      - name: Committed dashboard is up to date
+        run: python build_dashboard.py && git diff --exit-code --stat docs/
 
       # No GROQ_API_KEY in CI: proves the app runs on the code-written fallback
       - name: Agents smoke test (template mode)
