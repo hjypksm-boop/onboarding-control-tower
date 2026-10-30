@@ -159,16 +159,26 @@ FROM (
 -- ---------- Owner workload ----------
 -- Open (not Done) stages per team member, counted as distinct work items so a shared
 -- client-level track for two products counts once. Every member appears, even with no open work.
+-- active        = in progress + blocked: the work actually on the owner's desk. Not-started
+--                 stages are waiting on other tracks, so they don't count towards load.
+-- workload_rank = 1 for the busiest owner by active, ties broken by blocked, then member_id
 CREATE VIEW v_owner_workload AS
-SELECT m.member_id, m.member_label, m.team_id, m.role,
-       COUNT(DISTINCT s.work_item_id) AS open_stages,
-       COUNT(DISTINCT CASE WHEN s.stage_status = 'In progress' THEN s.work_item_id END) AS in_progress,
-       COUNT(DISTINCT CASE WHEN s.stage_status = 'Blocked' THEN s.work_item_id END) AS blocked,
-       COUNT(DISTINCT CASE WHEN s.stage_status = 'Not started' THEN s.work_item_id END) AS not_started,
-       COUNT(DISTINCT CASE WHEN s.sla_status = 'breached' THEN s.work_item_id END) AS breached,
-       COUNT(DISTINCT CASE WHEN s.sla_status = 'at risk' THEN s.work_item_id END) AS at_risk,
-       COUNT(DISTINCT CASE WHEN s.is_critical_path = 1 THEN s.work_item_id END) AS on_critical_path,
-       MAX(s.days_blocked) AS oldest_blocker_days
-FROM team_members m
-LEFT JOIN v_stage_sla s ON s.owner_member_id = m.member_id AND s.stage_status <> 'Done'
-GROUP BY m.member_id;
+WITH counts AS (
+    SELECT m.member_id, m.member_label, m.team_id, m.role,
+           COUNT(DISTINCT s.work_item_id) AS open_stages,
+           COUNT(DISTINCT CASE WHEN s.stage_status = 'In progress' THEN s.work_item_id END) AS in_progress,
+           COUNT(DISTINCT CASE WHEN s.stage_status = 'Blocked' THEN s.work_item_id END) AS blocked,
+           COUNT(DISTINCT CASE WHEN s.stage_status = 'Not started' THEN s.work_item_id END) AS not_started,
+           COUNT(DISTINCT CASE WHEN s.sla_status = 'breached' THEN s.work_item_id END) AS breached,
+           COUNT(DISTINCT CASE WHEN s.sla_status = 'at risk' THEN s.work_item_id END) AS at_risk,
+           COUNT(DISTINCT CASE WHEN s.is_critical_path = 1 THEN s.work_item_id END) AS on_critical_path,
+           MAX(s.days_blocked) AS oldest_blocker_days
+    FROM team_members m
+    LEFT JOIN v_stage_sla s ON s.owner_member_id = m.member_id AND s.stage_status <> 'Done'
+    GROUP BY m.member_id
+)
+SELECT member_id, member_label, team_id, role, open_stages, in_progress, blocked, not_started,
+       in_progress + blocked AS active,
+       ROW_NUMBER() OVER (ORDER BY in_progress + blocked DESC, blocked DESC, member_id) AS workload_rank,
+       breached, at_risk, on_critical_path, oldest_blocker_days
+FROM counts;

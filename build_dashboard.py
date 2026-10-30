@@ -100,8 +100,7 @@ def build(con):
         ORDER BY post_sale_touchpoints DESC, client_id""")
     workload = query(con, """
         SELECT member_id, member_label, in_progress, blocked, not_started, breached, at_risk, oldest_blocker_days
-        FROM v_owner_workload WHERE open_stages > 0
-        ORDER BY in_progress + blocked DESC, blocked DESC, member_id""")
+        FROM v_owner_workload WHERE open_stages > 0 ORDER BY workload_rank""")
     second = query(con, """
         SELECT client_name, first_product, second_product, second_status,
                days_to_second_product, forecast_days_to_second_product

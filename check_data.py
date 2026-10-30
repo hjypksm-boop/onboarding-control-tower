@@ -92,9 +92,9 @@ q("v_touchpoints: clients by cap status", "SELECT cap_status, COUNT(*) clients F
 q("v_touchpoints: warnings and breaches", """
 SELECT client_id, client_name, post_sale_touchpoints, bundled_post_sale, cap_status
 FROM v_touchpoints WHERE cap_status <> 'ok' ORDER BY post_sale_touchpoints DESC, client_id""")
-q("v_owner_workload: members with open stages", """
-SELECT member_id, open_stages, in_progress, blocked, not_started, breached, at_risk, on_critical_path, oldest_blocker_days
-FROM v_owner_workload WHERE open_stages > 0 ORDER BY open_stages DESC, blocked DESC""")
+q("v_owner_workload: members with open stages, by workload rank (in progress + blocked)", """
+SELECT workload_rank, member_id, active, in_progress, blocked, not_started, breached, at_risk, on_critical_path, oldest_blocker_days
+FROM v_owner_workload WHERE open_stages > 0 ORDER BY workload_rank""")
 
 print()
 if failures:

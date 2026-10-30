@@ -252,8 +252,8 @@ def brief_sections(items, f):
                GROUP_CONCAT(CASE WHEN cap_status = 'breach' THEN client_name END, ', ') breach_clients
         FROM v_touchpoints""")[0]
     load = query("""
-        SELECT member_id, in_progress + blocked AS active, in_progress, blocked, oldest_blocker_days
-        FROM v_owner_workload ORDER BY active DESC, blocked DESC LIMIT 3""")
+        SELECT member_id, active, in_progress, blocked, oldest_blocker_days
+        FROM v_owner_workload WHERE workload_rank <= 3 ORDER BY workload_rank""")
 
     lines = ["Revenue at risk (largest trapped revenue in flight)",
              *[f"- {r['cp_id']} {r['client_name']} ({r['product_id']}, {r['current_lane']} lane): "

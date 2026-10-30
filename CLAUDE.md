@@ -18,7 +18,7 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | File | Purpose |
 |---|---|
 | `schema.sql` | DDL for the 11 tables |
-| `metrics.sql` | Metric views: `v_as_of`, `v_stage_sla`, `v_trapped_revenue`, `v_ramp`, `v_second_product`, `v_touchpoints`, `v_owner_workload`. Uses DROP plus CREATE, so it's safe to re-run. Build new metrics here as views |
+| `metrics.sql` | Metric views: `v_as_of`, `v_stage_sla`, `v_trapped_revenue`, `v_ramp`, `v_second_product`, `v_touchpoints`, `v_owner_workload`. Uses DROP plus CREATE, so it's safe to re-run. Build new metrics here as views. Rank owners by `v_owner_workload.workload_rank` (in progress + blocked), never by total open stages |
 | `generate_data.py` | Builds `control_tower.db` and `csv/`, then loads `metrics.sql` and checks that `v_as_of` matches `TODAY`. Seeded (`random.seed(42)`), so every run gives the same data |
 | `check_data.py` | Sanity checks, plus a query against each metric view. Exits with status 1 if any integrity check fails. Works from any directory |
 | `.github/workflows/ci.yml` | CI on push and PR (Python 3.12 and 3.13): rebuild the data, `git diff --exit-code csv/` (the generator must stay deterministic), integrity checks, tests, agents smoke test without a key. If you change the generator on purpose, commit the regenerated CSVs |
@@ -30,6 +30,7 @@ A portfolio project: a B2B onboarding-to-revenue control tower for a fintech. It
 | `routing.py` | `route_lane()`, `should_escalate()` / `escalation_day()` (escalates on the first day beyond 1.5× the lane target), and `boundary_flips()` (one-step attribute changes that move a lane). `LANE_TARGET` must match `LANES` in the generator, which asserts it |
 | `tests/test_agents.py` | Guardrail tests (standard library `unittest`, no API calls): headline figures equal the views, the draft guard rejects figures, and the LLM changes no line with a figure |
 | `build_dashboard.py`, `dashboard/template.html` | Static dashboard, built to `docs/index.html` and served by GitHub Pages. Standard library only, with inline SVG and vanilla JS (no CDN). Every figure comes from SQL against the views. Text goes in via `textContent` only. The palette follows the dataviz method: categorical slots 1–3 validated for light and dark, status colours always with an icon and label, a table view for every chart. Output is deterministic. After changing the data, views or template, rerun it and commit `docs/index.html`, otherwise CI fails |
+| `tests/test_metrics.py` | View-level tests, such as `v_owner_workload` ranking by active work |
 | `tests/test_dashboard.py` | Dashboard figures equal the views, and the embedded JSON is safe and complete |
 | `tests/test_routing.py` | Routing rule order, escalation threshold, boundary flips, every stored lane matching the rules, and the lane report staying code-written |
 
