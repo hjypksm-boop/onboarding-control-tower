@@ -45,6 +45,9 @@ a { color: var(--text-primary); }
 .tile, .card { background: var(--surface-1); border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); }
 .tile { padding: 14px 16px; }
 .tile.hero { grid-column: span 2; }
+.kpis.mini { margin: 0 0 12px; }
+.kpis.mini .value { font-size: 22px; }
+td .icon { display: inline-block; margin-right: 6px; }
 .tile .label { color: var(--text-secondary); font-size: 13px; }
 .tile .value { font-size: 28px; font-weight: 600; margin-top: 2px; }
 .tile.hero .value { font-size: 48px; line-height: 1.1; }
@@ -124,6 +127,14 @@ text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
   </header>
 
   <section class="kpis" id="kpis" aria-label="Headline figures"></section>
+
+  <section class="card" aria-labelledby="h-week">
+    <h2 id="h-week">This week</h2>
+    <p class="desc" id="week-desc"></p>
+    <div class="kpis mini" id="week-tiles"></div>
+    <div class="tablewrap" id="week-events"></div>
+    <p class="summary" style="margin-top:8px">Stages that finished on time are counted above but not listed. Derived from dates in the data: a blocker raised and cleared within the week isn't recorded, and earlier forecasts aren't stored.</p>
+  </section>
 
   <section class="card" aria-labelledby="h-trapped">
     <h2 id="h-trapped">Trapped revenue, in flight</h2>
@@ -331,6 +342,43 @@ function tiles() {
     h("div", { class: "value" }, it.value, t);
     h("div", { class: "sub" }, it.sub, t);
   }
+}
+
+// ---------- this week: counts and an event list, newest first ----------
+function week() {
+  const w = D.week.summary;
+  document.getElementById("week-desc").textContent =
+    `${fmtDate(w.week_start)} to ${fmtDate(w.week_end)}. What changed in the 7 days to the as-of date.`;
+  const el = document.getElementById("week-tiles");
+  [
+    { label: "New blockers", value: w.new_blockers, sub: `${w.new_blockers_critical} on the critical path` },
+    { label: "Passed planned end", value: w.new_breaches, sub: "open stages now breached" },
+    { label: "Missed go-live target", value: w.missed_targets, sub: `${usd.format(w.missed_targets_trapped_usd)} trapped` },
+    { label: "Stages completed", value: w.completed_stages, sub: `${w.completed_late} finished late` },
+    { label: "Went live", value: w.went_live, sub: "journeys" },
+  ].forEach(it => {
+    const t = h("div", { class: "tile" }, null, el);
+    h("div", { class: "label" }, it.label, t);
+    h("div", { class: "value" }, num.format(it.value), t);
+    h("div", { class: "sub" }, it.sub, t);
+  });
+  const KIND = { blocked: ["■", "st-critical"], breached: ["■", "st-critical"], missed: ["■", "st-critical"],
+                 late: ["▲", "st-warning"], live: ["●", "st-good"] };
+  const wrap = document.getElementById("week-events");
+  if (!D.week.events.length) { h("p", { class: "summary" }, "Nothing changed this week.", wrap); return; }
+  const t = h("table", {}, null, wrap);
+  const hr = h("tr", {}, null, h("thead", {}, null, t));
+  ["Date", "What happened", "Journey", "Track", "Owner", "Detail"].forEach(x => h("th", {}, x, hr));
+  const tb = h("tbody", {}, null, t);
+  D.week.events.forEach(e => {
+    const tr = h("tr", {}, null, tb);
+    h("td", {}, fmtDate(e.date), tr);
+    const td = h("td", {}, null, tr);
+    const [icon, cls] = KIND[e.kind];
+    const i = h("span", { class: "icon " + cls, "aria-hidden": "true" }, icon, td);
+    td.appendChild(document.createTextNode(e.event));
+    [e.journey, e.track || "–", e.owner || "–", e.detail].forEach(v => h("td", {}, v, tr));
+  });
 }
 
 // ---------- trapped revenue: ranked bars, one series ----------
@@ -554,6 +602,7 @@ function renderTouch() {
 // ---------- static parts: legends, tables, journey picker ----------
 function once() {
   tiles();
+  week();
   legend(document.getElementById("l-sla"), [
     { icon: "●", cls: "st-good", label: "On track" }, { icon: "▲", cls: "st-warning", label: "At risk" }, { icon: "■", cls: "st-critical", label: "Breached" }]);
   const focus = D.ramp.filter(r => !r.reached_run_rate), reached = D.ramp.length - focus.length;

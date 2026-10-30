@@ -96,6 +96,14 @@ q("v_owner_workload: members with open stages, by workload rank (in progress + b
 SELECT workload_rank, member_id, active, in_progress, blocked, not_started, breached, at_risk, on_critical_path, oldest_blocker_days
 FROM v_owner_workload WHERE open_stages > 0 ORDER BY workload_rank""")
 
+q("v_week_summary: this week (7 days to the as-of date)", "SELECT * FROM v_week_summary")
+zero("this-week events outside the 7-day window", """
+SELECT COUNT(*) FROM (
+    SELECT event_date FROM v_week_new_blockers UNION ALL SELECT event_date FROM v_week_completed_stages
+    UNION ALL SELECT event_date FROM v_week_new_breaches UNION ALL SELECT event_date FROM v_week_missed_targets
+    UNION ALL SELECT event_date FROM v_week_went_live) e, v_week w
+WHERE e.event_date NOT BETWEEN w.week_start AND w.week_end""")
+
 print()
 if failures:
     print(f"FAILED integrity checks: {', '.join(failures)}")

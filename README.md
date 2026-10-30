@@ -13,6 +13,7 @@ This project is a control tower that makes that cost visible and tells each team
 - **Four routing lanes.** Each new client-product journey is routed by rules (`routing.py`) to **Fast** (10-day target), **Standard** (30), **Complex** (60) or **Exceptions** (75, for USDC products and high-risk clients that need partner bank sign-off). A journey stalled beyond 1.5× its target escalates to Exceptions.
 - **Trapped revenue.** Days late × expected daily revenue, for every journey: forecast versus target for journeys in flight, and actual versus target for journeys already live. It turns "the KYB track is late" into "$171,519 is waiting on this journey".
 - **The 3-touchpoint cap.** Clients shouldn't be chased by seven teams. Post-sale requests are capped at 3 per client, with a warning at 3 and a breach above it, and teams are encouraged to bundle their asks.
+- **What changed this week.** New blockers, stages that just passed their planned end, missed go-live targets and finished stages, all derived from dates already in the data. No history is faked.
 - **AI agents with guardrails.** LLM agents triage blockers, draft nudges to stage owners, write the daily brief and review lane routing. **Code writes every figure; the LLM writes only wording.** Any draft that contains a number is rejected, every LLM sentence is labelled for human review, and the app runs fully without an API key.
 - **Built with Python and SQL.** SQLite, with a schema written to port to Postgres. Metrics are SQL views, and the generator, metrics, checks and dashboard use only the Python standard library. The agents use the Groq API. CI runs integrity checks and tests on every push.
 
@@ -20,13 +21,20 @@ This project is a control tower that makes that cost visible and tells each team
 
 **Live: https://hjypksm-boop.github.io/onboarding-control-tower/**
 
-![Control tower dashboard: headline tiles, trapped revenue by journey and a journey timeline with the critical path highlighted](docs/dashboard.png)
+![Control tower dashboard: headline tiles, what changed this week, and trapped revenue by journey](docs/dashboard.png)
 
 ## Sample daily brief
 
-An excerpt from `python agents.py brief`, as of 18 Oct 2026. Every line here is written by code from the SQL views. With an API key, the recommended actions are drafted by the LLM instead, under a `[DRAFT – review before sending]` label.
+An excerpt from `python agents.py brief`, as of 18 Oct 2026 (the full brief also lists each event under This week). Every line here is written by code from the SQL views. With an API key, the recommended actions are drafted by the LLM instead, under a `[DRAFT – review before sending]` label.
 
 ```text
+This week (12 Oct to 18 Oct 2026)
+- New blockers: 7 (5 on the critical path).
+- Stages that passed their planned end without finishing: 4.
+- Journeys that passed their target go-live without going live: 2, with $6,434 trapped in total.
+- Stages completed: 30, of which 4 finished late: CP-0003 Legal, CP-0012 Compliance ops readiness, CP-0018 Legal, CP-0010 Compliance ops readiness.
+- Journeys that went live: 0.
+
 Headline
 19 of 35 in-flight journeys are forecast to go live late, trapping $662,023 of revenue; the largest
 is CP-0019 Skyward Travel Group at $171,519. 10 open stages are breached (9 on the critical path)
@@ -42,6 +50,7 @@ Live revenue
 - Cinder Games (PAYIN) is at 73% of expected daily revenue after 223 days live; ramp shortfall so far $71,695.
 
 Recommended actions
+- Get this week's new critical-path blockers moving before they age: CP-0003, CP-0005, CP-0020, CP-0022, CP-0033.
 - Unblock the largest trapped-revenue journey first: CP-0019 Skyward Travel Group.
 - Clear the longest-blocked critical-path stage: CP-0024 Horizon OTA (Tech build).
 - Review ramp plans with Monarch Gig Works, Cinder Games.
@@ -71,7 +80,7 @@ To use the LLM, run `cp .env.example .env` and set `GROQ_API_KEY`. `.env` is git
 | `classify` | Tags each blocked stage as waiting on Client, Internal or Partner bank | Keyword rules decide the clear cases | A label for edge cases (no keyword match, or conflicting matches), which must be one of the allowed labels |
 | `blockers` | Blocked stages, grouped by who we're waiting on | The grouped list with days blocked, SLA and critical path | One next action per group |
 | `nudges` | One message per owner with breached, at-risk or blocked stages | To, Subject, stage bullets, the ask, sign-off | The opening line: greeting and which stage to tackle first |
-| `brief` | Daily brief | Title, headline, and every section: revenue at risk, onboarding health, live revenue, touchpoints, team load | The recommended actions |
+| `brief` | Daily brief | Title, This week, headline, and every section: revenue at risk, onboarding health, live revenue, touchpoints, team load | The recommended actions, weighing this week's changes |
 | `lanes` | Lane router: re-routes every journey with `routing.py`, lists escalations that are done, due now or due within 7 days, and journeys one client attribute away from a quicker lane | The routing check, escalations and quicker-lane cases, with target days saved | A short review note |
 
 ### LLM guardrails
@@ -86,6 +95,7 @@ To use the LLM, run `cp .env.example .env` and set `GROQ_API_KEY`. `.env` is git
 `python build_dashboard.py` writes one self-contained page, `docs/index.html`, from the views. It uses the standard library, inline SVG and vanilla JavaScript, with no CDN or build step. It shows:
 
 - **Headline tiles:** trapped revenue in flight and historic, breached and blocked stages, touchpoint breaches, and live journeys below run-rate.
+- **This week:** counts and an event list, newest first: new blockers, stages that passed their planned end, missed go-live targets, late completions and go-lives.
 - **Trapped revenue by journey:** ranked bars.
 - **Journey timeline:** pick any in-flight journey to see its parallel tracks. The critical path is highlighted, with planned-end ticks, and the part after the as-of date shows as a forecast.
 - **Open stages by SLA status per track, and team load per owner:** stacked bars.
@@ -153,6 +163,8 @@ These are implemented as views in `metrics.sql`. `v_as_of` holds the as-of date.
 | `v_ramp` | Live journey | Ramp shortfall, time to expected revenue, latest 7-day average as a share of expected revenue |
 | `v_second_product` | Client with a 2nd product | Days from first to second go-live, or forecast days if still onboarding |
 | `v_touchpoints` | Client | Post-sale touchpoint count and `cap_status`: ok, warning or breach |
+| `v_week`, `v_week_summary` | Week | The 7 days ending on the as-of date, and one row of counts for it |
+| `v_week_new_blockers`, `v_week_completed_stages`, `v_week_new_breaches`, `v_week_missed_targets`, `v_week_went_live` | Event | This week's events, each with an `event_date`. See "This week" below |
 | `v_owner_workload` | Team member | Open, in-progress, blocked, not-started, breached, at-risk and critical-path stages. `active` (in progress + blocked) and `workload_rank` rank owners by the work on their desk; not-started stages wait on other tracks. A shared client-level track counts once |
 
 - **Trapped revenue, in flight:** max(0, forecast go-live − target go-live) × expected daily revenue.
@@ -161,6 +173,20 @@ These are implemented as views in `metrics.sql`. `v_as_of` holds the as-of date.
 - **Time to expected revenue:** days from go-live until the 7-day average revenue reaches 90% of `expected_daily_revenue`.
 - **Time to second product:** the second product's go-live date minus the first product's go-live date.
 - **Touchpoint breach:** more than 3 post-sale touchpoints for a client. A warning fires at 3.
+
+### This week
+
+The `v_week_*` views show what changed in the 7 days ending on the as-of date, derived only from dates already in the data:
+
+| Event | Derived from |
+|---|---|
+| New blocker | `blocker_since` in the week, on a stage that is still blocked |
+| Stage completed (and whether late) | `actual_end_date` in the week |
+| Passed planned end | an open stage whose first breached day (planned end + 1) is in the week |
+| Missed go-live target | an in-flight journey whose `target_go_live_date` is in the week |
+| Went live | `actual_go_live_date` in the week |
+
+What this can't show, because no history is stored: a blocker raised and cleared within the week, or a forecast that moved. Showing those would need daily snapshots.
 
 ### Scenarios built into the data
 

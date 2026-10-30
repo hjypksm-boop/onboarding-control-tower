@@ -4,6 +4,13 @@
 -- Metric definitions follow README.md. All durations are calendar days.
 -- =====================================================================
 
+DROP VIEW IF EXISTS v_week_summary;
+DROP VIEW IF EXISTS v_week_went_live;
+DROP VIEW IF EXISTS v_week_missed_targets;
+DROP VIEW IF EXISTS v_week_new_breaches;
+DROP VIEW IF EXISTS v_week_completed_stages;
+DROP VIEW IF EXISTS v_week_new_blockers;
+DROP VIEW IF EXISTS v_week;
 DROP VIEW IF EXISTS v_owner_workload;
 DROP VIEW IF EXISTS v_touchpoints;
 DROP VIEW IF EXISTS v_second_product;
@@ -182,3 +189,68 @@ SELECT member_id, member_label, team_id, role, open_stages, in_progress, blocked
        ROW_NUMBER() OVER (ORDER BY in_progress + blocked DESC, blocked DESC, member_id) AS workload_rank,
        breached, at_risk, on_critical_path, oldest_blocker_days
 FROM counts;
+
+-- =====================================================================
+-- This week: what changed in the 7 days ending on the as-of date.
+-- Derived only from dates already in the data, with no stored history:
+-- - a blocker raised and cleared inside the week leaves no trace (only current blockers have blocker_since)
+-- - earlier forecasts are not stored, so "forecast moved" can't be shown; a missed target can
+-- Shared client-level tracks count once (grouped by work_item_id; cp_ids lists every journey).
+-- =====================================================================
+CREATE VIEW v_week AS
+SELECT date(as_of_date, '-6 days') AS week_start, as_of_date AS week_end FROM v_as_of;
+
+-- Stages blocked now whose blocker started this week
+CREATE VIEW v_week_new_blockers AS
+SELECT s.blocker_since AS event_date, GROUP_CONCAT(s.cp_id, '/') AS cp_ids, s.client_id, c.client_name,
+       s.track, s.owner_member_id, s.blocker_note, s.days_blocked, s.sla_status,
+       MAX(s.is_critical_path) AS is_critical_path
+FROM v_stage_sla s JOIN clients c USING (client_id) CROSS JOIN v_week w
+WHERE s.stage_status = 'Blocked' AND s.blocker_since BETWEEN w.week_start AND w.week_end
+GROUP BY s.work_item_id;
+
+-- Stages that finished this week, and whether they finished late
+CREATE VIEW v_week_completed_stages AS
+SELECT s.actual_end_date AS event_date, GROUP_CONCAT(s.cp_id, '/') AS cp_ids, s.client_id, c.client_name,
+       s.track, s.owner_member_id, s.target_days, s.days_used,
+       CASE WHEN s.sla_status = 'breached' THEN 1 ELSE 0 END AS finished_late
+FROM v_stage_sla s JOIN clients c USING (client_id) CROSS JOIN v_week w
+WHERE s.stage_status = 'Done' AND s.actual_end_date BETWEEN w.week_start AND w.week_end
+GROUP BY s.work_item_id;
+
+-- Open stages that passed their planned end this week (first breached day = planned end + 1)
+CREATE VIEW v_week_new_breaches AS
+SELECT date(s.planned_end_date, '+1 day') AS event_date, GROUP_CONCAT(s.cp_id, '/') AS cp_ids, s.client_id,
+       c.client_name, s.track, s.owner_member_id, s.stage_status, s.target_days, s.days_used,
+       MAX(s.is_critical_path) AS is_critical_path
+FROM v_stage_sla s JOIN clients c USING (client_id) CROSS JOIN v_week w
+WHERE s.stage_status <> 'Done' AND s.sla_status = 'breached'
+  AND date(s.planned_end_date, '+1 day') BETWEEN w.week_start AND w.week_end
+GROUP BY s.work_item_id;
+
+-- In-flight journeys whose target go-live fell this week: the target passed without go-live
+CREATE VIEW v_week_missed_targets AS
+SELECT t.target_go_live_date AS event_date, t.cp_id, t.client_id, t.client_name, t.product_id, t.current_lane,
+       t.forecast_go_live_date, t.in_flight_delay_days, t.trapped_in_flight_usd
+FROM v_trapped_revenue t CROSS JOIN v_week w
+WHERE t.cp_status = 'Onboarding' AND t.target_go_live_date BETWEEN w.week_start AND w.week_end;
+
+-- Journeys that went live this week, and how late
+CREATE VIEW v_week_went_live AS
+SELECT t.actual_go_live_date AS event_date, t.cp_id, t.client_id, t.client_name, t.product_id,
+       t.historic_delay_days, t.trapped_historic_usd
+FROM v_trapped_revenue t CROSS JOIN v_week w
+WHERE t.cp_status = 'Live' AND t.actual_go_live_date BETWEEN w.week_start AND w.week_end;
+
+CREATE VIEW v_week_summary AS
+SELECT w.week_start, w.week_end,
+       (SELECT COUNT(*) FROM v_week_new_blockers) AS new_blockers,
+       (SELECT COUNT(*) FROM v_week_new_blockers WHERE is_critical_path = 1) AS new_blockers_critical,
+       (SELECT COUNT(*) FROM v_week_completed_stages) AS completed_stages,
+       (SELECT COUNT(*) FROM v_week_completed_stages WHERE finished_late = 1) AS completed_late,
+       (SELECT COUNT(*) FROM v_week_new_breaches) AS new_breaches,
+       (SELECT COUNT(*) FROM v_week_missed_targets) AS missed_targets,
+       -- whole dollars per journey, then summed, so the total matches the rows listed beside it
+       (SELECT COALESCE(SUM(ROUND(trapped_in_flight_usd)), 0) FROM v_week_missed_targets) AS missed_targets_trapped_usd,
+       (SELECT COUNT(*) FROM v_week_went_live) AS went_live
+FROM v_week w;

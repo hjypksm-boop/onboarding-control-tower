@@ -10,6 +10,7 @@ Run:  python generate_data.py && python build_dashboard.py
 import json
 import os
 import sqlite3
+from datetime import date
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(HERE, "control_tower.db")
@@ -23,6 +24,37 @@ TRACKS = ["Contract", "Legal", "KYB-KYC", "Tech build", "Compliance ops readines
 def query(con, sql):
     con.row_factory = sqlite3.Row
     return [dict(r) for r in con.execute(sql)]
+
+
+def long_date(iso):
+    """'2026-10-19' -> '19 Oct 2026', matching the page's date format."""
+    return date.fromisoformat(iso).strftime("%d %b %Y").lstrip("0")
+
+
+def week_events(con):
+    """Notable events from the v_week_* views, newest first. On-time completions are only counted."""
+    events = []
+    for r in query(con, "SELECT * FROM v_week_new_blockers"):
+        events.append({"date": r["event_date"], "kind": "blocked", "event": "New blocker", "journey": f"{r['cp_ids']} {r['client_name']}",
+                       "track": r["track"], "owner": r["owner_member_id"],
+                       "detail": r["blocker_note"] + ("; critical path" if r["is_critical_path"] else "")})
+    for r in query(con, "SELECT * FROM v_week_new_breaches"):
+        events.append({"date": r["event_date"], "kind": "breached", "event": "Passed planned end", "journey": f"{r['cp_ids']} {r['client_name']}",
+                       "track": r["track"], "owner": r["owner_member_id"],
+                       "detail": f"{r['days_used']} of {r['target_days']} target days used, {r['stage_status'].lower()}"})
+    for r in query(con, "SELECT * FROM v_week_missed_targets"):
+        events.append({"date": r["event_date"], "kind": "missed", "event": "Missed go-live target", "journey": f"{r['cp_id']} {r['client_name']}",
+                       "track": "", "owner": "",
+                       "detail": f"forecast {long_date(r['forecast_go_live_date'])}, ${round(r['trapped_in_flight_usd']):,} trapped"})
+    for r in query(con, "SELECT * FROM v_week_completed_stages WHERE finished_late = 1"):
+        events.append({"date": r["event_date"], "kind": "late", "event": "Finished late", "journey": f"{r['cp_ids']} {r['client_name']}",
+                       "track": r["track"], "owner": r["owner_member_id"],
+                       "detail": f"{r['days_used']} of {r['target_days']} target days used"})
+    for r in query(con, "SELECT * FROM v_week_went_live"):
+        events.append({"date": r["event_date"], "kind": "live", "event": "Went live", "journey": f"{r['cp_id']} {r['client_name']}",
+                       "track": "", "owner": "", "detail": f"{r['historic_delay_days']} days after target"})
+    order = ["blocked", "breached", "missed", "late", "live"]
+    return sorted(events, key=lambda e: (e["date"], -order.index(e["kind"]), e["journey"]), reverse=True)
 
 
 def build(con):
@@ -105,7 +137,8 @@ def build(con):
         SELECT client_name, first_product, second_product, second_status,
                days_to_second_product, forecast_days_to_second_product
         FROM v_second_product ORDER BY client_name""")
-    return {"kpis": kpis, "trapped": trapped, "sla": sla, "journeys": journeys, "stages": stages,
+    week = {"summary": one("SELECT * FROM v_week_summary"), "events": week_events(con)}
+    return {"kpis": kpis, "week": week, "trapped": trapped, "sla": sla, "journeys": journeys, "stages": stages,
             "ramp": ramp_series, "touch_dist": touch_dist, "touch_flagged": touch_flagged,
             "workload": workload, "second": second}
 

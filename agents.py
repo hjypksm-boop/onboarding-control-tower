@@ -13,6 +13,7 @@ import argparse
 import os
 import sqlite3
 from collections import Counter
+from datetime import date
 
 import llm
 import routing
@@ -36,6 +37,11 @@ def usd(x):
 
 def pct(x):
     return f"{x:.0%}"
+
+
+def short_date(iso):
+    """'2026-10-12' -> '12 Oct'."""
+    return date.fromisoformat(iso).strftime("%d %b").lstrip("0")
 
 
 def days(n):
@@ -277,8 +283,43 @@ def brief_sections(items, f):
     return "\n".join(lines), ramp, load
 
 
-def brief_actions_template(items, f, ramp, load):
-    lines = [f"- Unblock the largest trapped-revenue journey first: {f['top_cp_id']} {f['top_client']}."]
+def week_facts():
+    """Code-written "This week" section from the v_week_* views. Returns (text, summary, new_blockers)."""
+    w = query("SELECT * FROM v_week_summary")[0]
+    blockers = query("SELECT * FROM v_week_new_blockers ORDER BY event_date, cp_ids")
+    breaches = query("SELECT * FROM v_week_new_breaches ORDER BY event_date, cp_ids")
+    missed = query("SELECT * FROM v_week_missed_targets ORDER BY event_date, cp_id")
+    late = query("SELECT * FROM v_week_completed_stages WHERE finished_late = 1 ORDER BY event_date, cp_ids")
+    live = query("SELECT * FROM v_week_went_live ORDER BY event_date, cp_id")
+    end = date.fromisoformat(w["week_end"])
+    lines = [f"This week ({short_date(w['week_start'])} to {short_date(w['week_end'])} {end.year})",
+             f"- New blockers: {w['new_blockers']} ({w['new_blockers_critical']} on the critical path)."]
+    lines += [f"  - {r['cp_ids']} {r['client_name']}, {r['track']} ({r['owner_member_id']}), since "
+              f"{short_date(r['event_date'])}{', critical path' if r['is_critical_path'] else ''}: {r['blocker_note']}"
+              for r in blockers]
+    lines.append(f"- Stages that passed their planned end without finishing: {w['new_breaches']}.")
+    lines += [f"  - {r['cp_ids']} {r['client_name']}, {r['track']} ({r['owner_member_id']}), from "
+              f"{short_date(r['event_date'])}: {r['days_used']} of {r['target_days']} target days used"
+              for r in breaches]
+    lines.append(f"- Journeys that passed their target go-live without going live: {w['missed_targets']}"
+                 + (f", with {usd(w['missed_targets_trapped_usd'])} trapped in total." if missed else "."))
+    lines += [f"  - {r['cp_id']} {r['client_name']} ({r['product_id']}, {r['current_lane']} lane): target "
+              f"{short_date(r['event_date'])}, forecast {short_date(r['forecast_go_live_date'])}, "
+              f"{usd(r['trapped_in_flight_usd'])} trapped" for r in missed]
+    lines.append(f"- Stages completed: {w['completed_stages']}, of which {w['completed_late']} finished late"
+                 + (": " + ", ".join(f"{r['cp_ids']} {r['track']}" for r in late) + "." if late else "."))
+    lines.append(f"- Journeys that went live: {w['went_live']}"
+                 + (": " + ", ".join(f"{r['cp_id']} {r['client_name']}" for r in live) + "." if live else "."))
+    return "\n".join(lines), w, blockers
+
+
+def brief_actions_template(items, f, ramp, load, week_blockers):
+    lines = []
+    new_critical = [r for r in week_blockers if r["is_critical_path"]]
+    if new_critical:
+        lines.append("- Get this week's new critical-path blockers moving before they age: "
+                     + ", ".join(r["cp_ids"] for r in new_critical) + ".")
+    lines.append(f"- Unblock the largest trapped-revenue journey first: {f['top_cp_id']} {f['top_client']}.")
     critical = [i for i in items if i["is_critical_path"]]
     if critical:  # items are sorted longest blocked first
         lines.append(f"- Clear the longest-blocked critical-path stage: {critical[0]['cp_ids']} "
@@ -291,16 +332,20 @@ def brief_actions_template(items, f, ramp, load):
 
 
 def daily_brief(items):
+    """Code writes the title, This week, the headline and every section; the LLM drafts only the actions."""
     f = brief_figures()
+    week, _, week_blockers = week_facts()
     sections, ramp, load = brief_sections(items, f)
-    facts = f"Headline\n{headline(f)}\n\n{sections}"
+    facts = f"{week}\n\nHeadline\n{headline(f)}\n\n{sections}"
     # the LLM also sees the blocked-stage detail (owner, track, who we wait on) so it doesn't guess them
     context = f"{facts}\n\n{blocker_facts(items)[0]}"
     actions, source = llm.draft("""
 You advise the leadership team of a fintech's B2B onboarding control tower. From the facts, write the
-three most important recommended actions for today as "-" bullets, most important first. Each names the
-stage, client or owner to act on and what to do. Only name an owner, track or blocker the facts give for
-that stage. No heading.""", context, brief_actions_template(items, f, ramp, load), max_tokens=300)
+three most important recommended actions for today as "-" bullets, most important first. Weigh what changed
+this week (new blockers, stages that just passed their planned end, missed go-live targets) alongside the
+largest risks. Each names the stage, client or owner to act on and what to do. Only name an owner, track or
+blocker the facts give for that stage. No heading.""", context,
+                                brief_actions_template(items, f, ramp, load, week_blockers), max_tokens=300)
     return (f"Control tower daily brief, as of {f['as_of_date']}\n\n{facts}\n\n"
             f"Recommended actions\n{actions}"), source
 
